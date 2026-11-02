@@ -2,7 +2,8 @@
  * @example tutorial.dox
  *
  * End-to-end walk-through of the stereo pipeline. The example below runs the four stages in
- * order and prints what each artefact means.
+ * order, prints what each artefact means, and reports the wall-clock cost of each phase with the
+ * process's peak resident memory.
  *
  * @include demo.cxx
  *

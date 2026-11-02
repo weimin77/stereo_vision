@@ -1,11 +1,32 @@
+#include <chrono>
 #include <cmath>
 #include <filesystem>
+#include <iomanip>
 #include <iostream>
 #include <string>
 
 #include "sv_config.hpp"
 #include "sv_pipeline.hpp"
 #include "sv_types.hpp"
+
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
+#include <psapi.h>
+#if defined(_MSC_VER)
+// GetProcessMemoryInfo lives in kernel32 when PSAPI_VERSION >= 2, but psapi.lib is in every SDK,
+// so naming it removes the dependency on which version the toolchain defaults to.
+#pragma comment(lib, "psapi.lib")
+#endif
+#else
+#include <sys/resource.h>
+#endif
 
 namespace {
 
@@ -14,6 +35,45 @@ constexpr double kSceneDisparityP50 = 73.26;
 constexpr double kSceneDepthP50 = 0.1129;
 constexpr double kDisparityTolerance = 3.0;
 constexpr double kDepthTolerance = 0.005;
+
+using Clock = std::chrono::steady_clock;
+
+constexpr double kKib = 1024.0;
+constexpr double kMib = kKib * kKib;
+
+/// Milliseconds between two readings of the monotonic clock.
+double elapsed_ms(Clock::time_point from, Clock::time_point to) {
+    return std::chrono::duration<double, std::milli>(to - from).count();
+}
+
+/**
+ * @brief Peak resident set size of this process in MiB, or a negative value when the platform
+ * cannot report it.
+ *
+ * Peak, not current: ru_maxrss is the high-water mark, so one reading at the end covers the whole
+ * process, including memory the writers have already released. Windows has no ru_maxrss; its peak
+ * working set is the closest equivalent.
+ */
+double peak_resident_mb() {
+#if defined(_WIN32)
+    PROCESS_MEMORY_COUNTERS_EX counters{};
+    if (GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&counters),
+                             sizeof(counters)) == 0) {
+        return -1.0;
+    }
+    return static_cast<double>(counters.PeakWorkingSetSize) / kMib;
+#else
+    struct rusage usage {};
+    if (getrusage(RUSAGE_SELF, &usage) != 0) {
+        return -1.0;
+    }
+#if defined(__APPLE__)
+    return static_cast<double>(usage.ru_maxrss) / kMib; // bytes on macOS,
+#else
+    return static_cast<double>(usage.ru_maxrss) / kKib; // kilobytes elsewhere
+#endif
+#endif
+}
 
 // test_package/conanfile.py copies resources/ next to the build and defines RESOURCES_PATH,
 // so this program never depends on the directory it is started from.
@@ -77,9 +137,34 @@ bool save_artifacts(const sv::Pipeline& pipeline, const std::filesystem::path& o
     return true;
 }
 
+/**
+ * @brief Wall-clock cost of the run, printed last so a reader sees the result before the bill.
+ *
+ * Three phases, because they answer different questions: `load` is I/O and depends on the storage,
+ * `run` is the algorithm the README benchmarks, and `write` grows with whatever the caller saves.
+ * The per-stage numbers inside `run` come from sv::RunReport; these frame them.
+ */
+void print_cost(Clock::time_point start, Clock::time_point loaded, Clock::time_point ran, Clock::time_point written) {
+    std::cout << std::fixed << std::setprecision(1) << "elapsed   load " << elapsed_ms(start, loaded) << " ms, run "
+              << elapsed_ms(loaded, ran) << " ms, write " << elapsed_ms(ran, written) << " ms, total "
+              << elapsed_ms(start, written) << " ms\n";
+
+    // Peak, not current: getrusage reports the high-water mark, so reading it now covers the
+    // whole process, including the buffers the writers have already released.
+    const double peak_mb = peak_resident_mb();
+    if (peak_mb < 0.0) {
+        std::cout << "memory    peak unavailable on this platform\n";
+    } else {
+        std::cout << "memory    peak " << peak_mb << " MB resident\n";
+    }
+    std::cout.unsetf(std::ios::floatfield);
+}
+
 }  // namespace
 
 int main() {
+    const Clock::time_point start = Clock::now();
+
     sv::Config config = sv::config_default();
     if (!load_config(config)) {
         return 1;
@@ -98,10 +183,13 @@ int main() {
         std::cerr << "example: " << pipeline.last_error() << '\n';
         return 1;
     }
+    const Clock::time_point loaded = Clock::now();
+
     if (!pipeline.run()) {
         std::cerr << "example: " << pipeline.last_error() << '\n';
         return 1;
     }
+    const Clock::time_point ran = Clock::now();
 
     print_report(pipeline);
     std::cout << "cloud     " << pipeline.get_pointcloud().points.size() << " points\n";
@@ -116,5 +204,9 @@ int main() {
         return 1;
     }
 
-    return save_artifacts(pipeline, "example_output") ? 0 : 1;
+    if (!save_artifacts(pipeline, "example_output")) {
+        return 1;
+    }
+    print_cost(start, loaded, ran, Clock::now());
+    return 0;
 }

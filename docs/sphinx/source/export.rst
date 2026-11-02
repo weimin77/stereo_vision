@@ -124,23 +124,28 @@ records.
 _`Algorithm benchmark from test frame`
 --------------------------------------
 
-Measured on a 640x480 synthetic pair with a known 20 px horizontal shift, ``fx = 500``, ``baseline =
-0.1 m``, window ``16 + 16``; single frame, Release build:
+Measured on the BlenderProc oven scene shipped in ``test_package/resources/oven``: a 640x480 pair,
+``fx = fy = 140 px``, ``baseline = 0.06 m``, window ``32 + 96``. Single frame, Release build, one
+representative run — timings on a shared machine move by tens of percent, the agreement columns do not:
 
 .. table:: single-frame cost and agreement
    :name: test results
    :align: center
 
-   ============== =========== ========================================
-   stage          time        result
-   ============== =========== ========================================
-   rectify        4.9 ms      ``639x479`` after common-ROI cropping
-   match          80.3 ms     median disparity ``20.00 px``
-   depth          0.4 ms      median depth ``2.500 m``
-   coverage       —           ``96.8 %`` of pixels valid
-   point cloud    —           ``296355`` points
-   ============== =========== ========================================
+   ================ =========== ==========================================
+   phase            time        result
+   ================ =========== ==========================================
+   load             14.4 ms     config, calibration and both images
+   run              403.9 ms    of which rectify 4.8 + match 308.6 + depth 2.3
+   write            129.3 ms    five artefacts, ``cloud.pcd`` is 2.7 MB
+   total            547.6 ms    peak resident 163.5 MB
+   ---------------- ----------- ------------------------------------------
+   coverage         —           ``74.9 %`` of pixels valid
+   disparity p50    —           ``74.94 px`` against ``73.26 px`` in the ground truth
+   depth p50        —           ``0.1121 m`` against ``0.1129 m`` in the ground truth
+   point cloud      —           ``230033`` points
+   ================ =========== ==========================================
 
-The median disparity equals the injected shift and the median depth equals
-:math:`f_x \lvert T_x \rvert / d`, which is the property the unit tests assert. Suite level:
-54 GTest cases, 81.3 % line coverage.
+``run`` is larger than the sum of its three stages because the stage timers stop at the conversion to
+depth; the validity histogram and the six percentiles over the disparity and depth buffers are inside
+``run`` but belong to no stage. Suite level: 64 GTest cases, 82.2 % line coverage.

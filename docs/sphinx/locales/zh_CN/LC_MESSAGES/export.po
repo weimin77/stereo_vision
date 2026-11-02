@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fcpp 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 15:04+0800\n"
+"POT-Creation-Date: 2026-11-02 15:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_CN\n"
@@ -19,11 +19,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../source/export.rst:2 25690d2f6dfd412c82ea0f4acf03ebb0
+#: ../../source/export.rst:2 d4e981d22c704ff6ba314a3e695b3efa
 msgid "_`Full demonstration of specific lib`"
 msgstr ""
 
-#: ../../source/export.rst:4 618201cf1c0147ac8f03d4fe0b0359b8
+#: ../../source/export.rst:4 e580404f7eed428aa951d9f9a54eac1d
 msgid ""
 "Brief overview: the library :code:`stereo_vision` turns a calibrated "
 "stereo pair into a disparity map, a depth map and a point cloud. The "
@@ -31,11 +31,11 @@ msgid ""
 "depth to point cloud."
 msgstr ""
 
-#: ../../source/export.rst:9 33cbb64551ff44d79ea147cff53cff70
+#: ../../source/export.rst:9 a01ed4acebbc4daa910ab207753a23f1
 msgid "_`Theories or introduction`"
 msgstr ""
 
-#: ../../source/export.rst:11 56af6bfeb7b44f79a7b7c7332f5455b8
+#: ../../source/export.rst:11 c774722da7b9417abfceedeb244ab95f
 msgid ""
 "A rectified stereo pair observes one scene point from two positions. Once"
 " the epipolar lines are horizontal, the horizontal coordinate difference "
@@ -43,13 +43,13 @@ msgid ""
 "rectified geometry:"
 msgstr ""
 
-#: ../../source/export.rst:15 07d69961e16a4e04ab8d8afed04c0ed0
+#: ../../source/export.rst:15 c20872ed923f4762bd3838476ff3f91f
 msgid ""
 "Z = \\frac{f_x \\, |T_x|}{d - d_{offs}}, \\qquad d_{offs} = c_{x1} - "
 "c_{x2}"
 msgstr ""
 
-#: ../../source/export.rst:20 ce9369d5b640476daf3e6e9d8f5cd569
+#: ../../source/export.rst:20 c6c0aad4c3524fc5a988c952effcbd59
 #, python-brace-format
 msgid ""
 ":math:`f_x` is the rectified focal length, :math:`T_x` the baseline "
@@ -59,7 +59,7 @@ msgid ""
 "paid when neighbouring pixels take different labels:"
 msgstr ""
 
-#: ../../source/export.rst:25 2794a69f8f854545979fa79d088af12e
+#: ../../source/export.rst:25 08091d19e3fb446a90b8f6c15b3c331a
 msgid ""
 "E(D) = \\sum_p C(p, D_p) + \\sum_{q \\in \\mathcal{N}_p} P_1 \\, "
 "\\delta(\\lvert D_p - D_q \\rvert = 1)\n"
@@ -67,7 +67,7 @@ msgid ""
 "\\rvert > 1)"
 msgstr ""
 
-#: ../../source/export.rst:30 17bbc0bffff64c63b92f79cb2edbc27e
+#: ../../source/export.rst:30 3641a6b991d843dca9ee9afe567f92b1
 #, python-brace-format
 msgid ""
 "The energy is minimised along several scanline directions and the per-"
@@ -77,13 +77,13 @@ msgid ""
 ":math:`P_2 = p_2^{factor} b^2`."
 msgstr ""
 
-#: ../../source/export.rst:35 aa950504a481410c99325adb54f0f01a
+#: ../../source/export.rst:35 9c202205e7ba45988a2e3a083733ecad
 msgid ""
 "Three details make the difference between a usable result and a "
 "plausible-looking one:"
 msgstr ""
 
-#: ../../source/export.rst:37 3657024cff32475f98ee48a5cc1e2f83
+#: ../../source/export.rst:37 3f7d698b5cf546938b7ee2e8165e609e
 #, python-brace-format
 msgid ""
 ":math:`d_{offs}` is generally not zero. Dropping it shifts the whole "
@@ -91,26 +91,26 @@ msgid ""
 "themselves stay correct."
 msgstr ""
 
-#: ../../source/export.rst:39 cb9358a2b0d24520b0a6c451fafcf276
+#: ../../source/export.rst:39 8f26f7cdcf284caab243111eedf3b77d
 msgid ""
 "Cropping to the common valid region translates the origin, so ``Q``'s "
 "fourth column and the principal points of ``P1``/``P2`` must move with "
 "it."
 msgstr ""
 
-#: ../../source/export.rst:41 e05d77b68ce0424681d079f502c7fac3
+#: ../../source/export.rst:41 98919511df244964afe2c23522f22c11
 msgid ""
 "Remapping a white image through the same maps marks the pixels that "
 "really carry data. Without that mask, the matcher reads the black border "
 "as scene content and invents disparity there."
 msgstr ""
 
-#: ../../source/export.rst:45 f4a30cecee9a42d2b4a3f8390c24882d
+#: ../../source/export.rst:45 3b832d4ad5fd4e45ad839ca09eddb47f
 #, fuzzy
 msgid "_`Usage demonstration`"
 msgstr "使用演示"
 
-#: ../../source/export.rst:47 c0de1c5f808d41eebbf12c5deb0b79dd
+#: ../../source/export.rst:47 d79f9f3e9cf64337ac8ff04ed4e32b5f
 msgid ""
 "The pipeline is a facade: images enter through ``set_input_image``, "
 "parameters through ``Config``, and every artefact leaves through an "
@@ -118,93 +118,93 @@ msgid ""
 "inspect the result before deciding which files to produce."
 msgstr ""
 
-#: ../../source/export.rst:51 8e6974af56f74d8ca8ed007d2b9b4315
+#: ../../source/export.rst:51 09f18e5ec4ae420b957f1211202457c4
 msgid "stereo pipeline"
 msgstr ""
 
-#: ../../source/export.rst:82 25068e99203b418fbbed76d775dd69a3
+#: ../../source/export.rst:82 8b8bd3443f0f43b3bb01b26a44c34416
 msgid "_`Applying results`"
 msgstr ""
 
-#: ../../source/export.rst:84 3e11b4c738414d33b51e7c141fca5646
+#: ../../source/export.rst:84 9b98680d62d7431ba8c282a7abd32599
 msgid "Five artefacts come out of a run, and each has its own consumer:"
 msgstr ""
 
-#: ../../source/export.rst:90 a01aa274a86049f4b09b84ac7f0da89d
+#: ../../source/export.rst:90 6cf860a2eeac4da1800f6c585f87ce20
 msgid "Artefact"
 msgstr ""
 
-#: ../../source/export.rst:91 1bb9d35df5134724b54a3306354787fe
+#: ../../source/export.rst:91 94c3bb8b87224ac3bb8cdebd3d2c9669
 msgid "Form"
 msgstr ""
 
-#: ../../source/export.rst:92 3e1e1e1d65494d71b18820e3e5d8baf7
+#: ../../source/export.rst:92 cb3b8388595b4c0ebb10673abd8cf90a
 msgid "Typical use"
 msgstr ""
 
-#: ../../source/export.rst:93 90931479d53c4d639fcd83e951f9ca62
+#: ../../source/export.rst:93 744ed39715dc4bdf89614b1a25d08cbc
 msgid "Disparity map"
 msgstr ""
 
-#: ../../source/export.rst:94 63ecd4a8561b4026994a48f770d0c41b
+#: ../../source/export.rst:94 6e0003a910304546b02df1136c252161
 msgid "``float`` px, NaN invalid; png is 1/16 px fixed point"
 msgstr ""
 
-#: ../../source/export.rst:95 362fdba4ecf1478888c31a9be0d37ecf
+#: ../../source/export.rst:95 ff5a15c038d14dfb85d9dd3ccd9b17b4
 msgid "Quality inspection, comparison against a matcher baseline"
 msgstr ""
 
-#: ../../source/export.rst:96 46f2686210384d12863abf75ad3e2910
+#: ../../source/export.rst:96 d5790aa3d1b64ba1b24d8cb879f08a62
 msgid "Depth map"
 msgstr ""
 
-#: ../../source/export.rst:97 224732ce1b094c7faea4bfd257934f82
+#: ../../source/export.rst:97 4af51b047fd54924ac8339e81d04d350
 msgid "``float`` m, NaN invalid; png is millimetres"
 msgstr ""
 
-#: ../../source/export.rst:98 4451419b211e489d9335061a4a0689f5
+#: ../../source/export.rst:98 fcd3aab752f7451aae0643aae52e36a4
 msgid "Metric measurement, depth gating, near/far clipping"
 msgstr ""
 
-#: ../../source/export.rst:99 4db17a6a2cdc418ab4a5b3bace96c4e6
+#: ../../source/export.rst:99 85aced78f25c4544a2c2d1ca7a6860f6
 msgid "Colourised disparity / depth"
 msgstr ""
 
-#: ../../source/export.rst:100 0df270e6e1204fce9cb0aada9504a46f
+#: ../../source/export.rst:100 e8b3b5d9d8f041bc91097a2aad267447
 msgid "8-bit BGR png, jpg or bmp; ``colorize = true``"
 msgstr ""
 
-#: ../../source/export.rst:101 4706777e2989462a8814bab27873739b
+#: ../../source/export.rst:101 9d4e54fa9f84458ba6629520d2416d48
 msgid ""
 "Opening the result in a viewer; the same ramp for both maps, so near is "
 "warm in each"
 msgstr ""
 
-#: ../../source/export.rst:102 bdaad22e5f314331ac83c8b52ca5b133
+#: ../../source/export.rst:102 99c34b6b07174e3693c087acd8d87dd5
 msgid "Point cloud"
 msgstr ""
 
-#: ../../source/export.rst:103 c564c419a08e41d186db7348710dcaf7
+#: ../../source/export.rst:103 c3cc98b1b0c944ffa546a490098566e6
 msgid "PCD or PLY, ``x y z`` only"
 msgstr ""
 
-#: ../../source/export.rst:104 db56ab493b1e4648bddc7859679d767c
+#: ../../source/export.rst:104 5e05f027179047a38b9127f5c03a55bd
 msgid "Registration, plane/box fitting, bin picking"
 msgstr ""
 
-#: ../../source/export.rst:105 e074b838803e4fc2b7f880b60a9aa29d
+#: ../../source/export.rst:105 2cfa3272648e4ed184ced3819d8165b8
 msgid "Validity mask"
 msgstr ""
 
-#: ../../source/export.rst:106 3a8a0c3e34a5493da10eb1b4641f6108
+#: ../../source/export.rst:106 c9ae3d18260742698083e0b150b67e46
 msgid "``uint8``, 255 usable"
 msgstr ""
 
-#: ../../source/export.rst:107 b8d0cd73b72347e7aa33b5981c3d4f68
+#: ../../source/export.rst:107 c425bd62bcd1453bae8df18ab10c550e
 msgid "Excluding border and occluded pixels from downstream statistics"
 msgstr ""
 
-#: ../../source/export.rst:109 69ea0826d2644841b3c244f75d188e28
+#: ../../source/export.rst:109 2efa47a5d2d74ab1800c03b6a1aa7d7b
 msgid ""
 "A 16-bit fixed-point or millimetre sample is the right thing to measure "
 "and the wrong thing to look at: most viewers render it as a near-black "
@@ -217,7 +217,7 @@ msgid ""
 "rejected rather than silently writing something else."
 msgstr ""
 
-#: ../../source/export.rst:117 561cde4df3ac456cbc4ce34c76b41c9a
+#: ../../source/export.rst:117 1c369d61a05343c0b4c144919a1fe35a
 msgid ""
 "The point cloud is expressed in the rectified left camera frame: x right,"
 " y down, z forward, in metres. It carries geometry only — three fields "
@@ -229,96 +229,130 @@ msgid ""
 "all of which the run report records."
 msgstr ""
 
-#: ../../source/export.rst:125 ee57044059af4b7089b972f5cf19f1fb
+#: ../../source/export.rst:125 33b35f67a5694f44a9f5575279594069
 msgid "_`Algorithm benchmark from test frame`"
 msgstr ""
 
-#: ../../source/export.rst:127 f09ce7db34fe4c91a4e69dc52f40b327
+#: ../../source/export.rst:127 85c244237f0c44a7a59f406ba012a5dc
 msgid ""
-"Measured on a 640x480 synthetic pair with a known 20 px horizontal shift,"
-" ``fx = 500``, ``baseline = 0.1 m``, window ``16 + 16``; single frame, "
-"Release build:"
+"Measured on the BlenderProc oven scene shipped in "
+"``test_package/resources/oven``: a 640x480 pair, ``fx = fy = 140 px``, "
+"``baseline = 0.06 m``, window ``32 + 96``. Single frame, Release build, "
+"one representative run — timings on a shared machine move by tens of "
+"percent, the agreement columns do not:"
 msgstr ""
 
-#: ../../source/export.rst:130 4074c4c3a1b04f7c8f158ce62b284fe2
+#: ../../source/export.rst:131 9127c4c666884d79999fe2ae9c4940ac
 msgid "single-frame cost and agreement"
 msgstr ""
 
-#: ../../source/export.rst:135 5329bc78b2fb4349924bb368ddd8eb5f
-msgid "stage"
+#: ../../source/export.rst:136 8f07a5d918b3447b82097523fc74b7c7
+msgid "phase"
 msgstr ""
 
-#: ../../source/export.rst:135 20b7246f29c14991a76d36025044914e
+#: ../../source/export.rst:136 3257f41d4fac44d880a7aa3d2f919057
 msgid "time"
 msgstr ""
 
-#: ../../source/export.rst:135 9eadb25523e848d89891b794d5b49093
+#: ../../source/export.rst:136 6b0680b60a4b45879530b7797f31abcc
 msgid "result"
 msgstr ""
 
-#: ../../source/export.rst:137 32fe8513c3be4e1f9273cf8b4a3edf42
-msgid "rectify"
+#: ../../source/export.rst:138 81d702b36898458d915aa0f0b0de984d
+msgid "load"
 msgstr ""
 
-#: ../../source/export.rst:137 5183fafa820c422bb6af789f0033663d
-msgid "4.9 ms"
+#: ../../source/export.rst:138 156b21b2f7e142a0bdd36321fbe5919c
+msgid "14.4 ms"
 msgstr ""
 
-#: ../../source/export.rst:137 41a3031bf2b342078be1b37219417a11
-msgid "``639x479`` after common-ROI cropping"
+#: ../../source/export.rst:138 85b1e44ead1c44188bdbda6fac84f45e
+msgid "config, calibration and both images"
 msgstr ""
 
-#: ../../source/export.rst:138 20684354e5a04e2192d23e8d6ec8ab35
-msgid "match"
+#: ../../source/export.rst:139 b85fe0622467466da9ec5f55b15002f0
+msgid "run"
 msgstr ""
 
-#: ../../source/export.rst:138 3482d789ee61490db540283c10c3e948
-msgid "80.3 ms"
+#: ../../source/export.rst:139 3783aaa9fe514bd0be691844d1604c50
+msgid "403.9 ms"
 msgstr ""
 
-#: ../../source/export.rst:138 3703ea75498a4ab4ba96031f4e09cd55
-msgid "median disparity ``20.00 px``"
+#: ../../source/export.rst:139 8d40f8521c154560a72c806f92659cef
+msgid "of which rectify 4.8 + match 308.6 + depth 2.3"
 msgstr ""
 
-#: ../../source/export.rst:139 8f6d457aa4094e16b743a80cf60c96c1
-msgid "depth"
+#: ../../source/export.rst:140 fe261557266f4cf38a06a0d4a7315511
+msgid "write"
 msgstr ""
 
-#: ../../source/export.rst:139 aa77f6d043c0440ca8b4c73b4c3990ae
-msgid "0.4 ms"
+#: ../../source/export.rst:140 fcde80433e124b9fa121f02ef607bf26
+msgid "129.3 ms"
 msgstr ""
 
-#: ../../source/export.rst:139 f63010da0d994898a8f3fb2f62ed757d
-msgid "median depth ``2.500 m``"
+#: ../../source/export.rst:140 1ba076e8d88b4c94aa03a64f265987a6
+msgid "five artefacts, ``cloud.pcd`` is 2.7 MB"
 msgstr ""
 
-#: ../../source/export.rst:140 1b39722f5e8f4976a4fbc83b0705a2b1
+#: ../../source/export.rst:141 662297e8d4104092829489f564fd7e70
+msgid "total"
+msgstr ""
+
+#: ../../source/export.rst:141 92b9716546aa477a85dbfa55d7634a34
+msgid "547.6 ms"
+msgstr ""
+
+#: ../../source/export.rst:141 a7e56c06b0144458a2034906bfb5b9fc
+msgid "peak resident 163.5 MB"
+msgstr ""
+
+#: ../../source/export.rst:143 53d38c503967457589e6ce5bfbec8525
 msgid "coverage"
 msgstr ""
 
-#: ../../source/export.rst:140 ../../source/export.rst:141
-#: 3c9e98cc9d3149cb9e9daab9f096238b a691be442ebd4e1aaddaed940e62f06b
+#: ../../source/export.rst:143 ../../source/export.rst:144
+#: ../../source/export.rst:145 ../../source/export.rst:146
+#: 52c42f4d93f74990bf834c5c392a1233 bcfb878ac622435daf8fc20ea33653a3
+#: f35f21dde4ea4fc6ab8529eebe432cd8 ff26aa12753e49c895ee01b8c75fcb3c
 msgid "—"
 msgstr ""
 
-#: ../../source/export.rst:140 9649787c0675407d98d66f2c7b102857
-msgid "``96.8 %`` of pixels valid"
+#: ../../source/export.rst:143 8b45cc4b78884967a331272d32e7fabc
+msgid "``74.9 %`` of pixels valid"
 msgstr ""
 
-#: ../../source/export.rst:141 5f7897d221554e98a691440cf54c3e11
+#: ../../source/export.rst:144 d19b7d1de60845a2b1bda68cf0e09b99
+msgid "disparity p50"
+msgstr ""
+
+#: ../../source/export.rst:144 78554c49e7f3497eb9cc33cc231f17e5
+msgid "``74.94 px`` against ``73.26 px`` in the ground truth"
+msgstr ""
+
+#: ../../source/export.rst:145 565213c64205448d944a60638abc9029
+msgid "depth p50"
+msgstr ""
+
+#: ../../source/export.rst:145 5cb7ae5ade374d9791382d73958f1b86
+msgid "``0.1121 m`` against ``0.1129 m`` in the ground truth"
+msgstr ""
+
+#: ../../source/export.rst:146 91db17145a0f40dd8b5b47c39cd5ca13
 msgid "point cloud"
 msgstr ""
 
-#: ../../source/export.rst:141 c96fae2d415340ecbfbb56d5b97b253a
-msgid "``296355`` points"
+#: ../../source/export.rst:146 3e1414ffdd9b4deda59f9fe20a1fecc9
+msgid "``230033`` points"
 msgstr ""
 
-#: ../../source/export.rst:144 2dbbef30c7f14c6288791392371696b9
+#: ../../source/export.rst:149 6d4207017ffb4013bf5732acc5fb1402
 #, python-format
 msgid ""
-"The median disparity equals the injected shift and the median depth "
-"equals :math:`f_x \\lvert T_x \\rvert / d`, which is the property the "
-"unit tests assert. Suite level: 54 GTest cases, 81.3 % line coverage."
+"``run`` is larger than the sum of its three stages because the stage "
+"timers stop at the conversion to depth; the validity histogram and the "
+"six percentiles over the disparity and depth buffers are inside ``run`` "
+"but belong to no stage. Suite level: 64 GTest cases, 82.2 % line "
+"coverage."
 msgstr ""
 
 #~ msgid "heatmap for design matrix"
@@ -801,5 +835,58 @@ msgstr ""
 #~ "``cx``, ``cy``, ``doffs`` and ``baseline``,"
 #~ " all of which the run report "
 #~ "records."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Measured on a 640x480 synthetic pair "
+#~ "with a known 20 px horizontal "
+#~ "shift, ``fx = 500``, ``baseline = "
+#~ "0.1 m``, window ``16 + 16``; "
+#~ "single frame, Release build:"
+#~ msgstr ""
+
+#~ msgid "stage"
+#~ msgstr ""
+
+#~ msgid "rectify"
+#~ msgstr ""
+
+#~ msgid "4.9 ms"
+#~ msgstr ""
+
+#~ msgid "``639x479`` after common-ROI cropping"
+#~ msgstr ""
+
+#~ msgid "match"
+#~ msgstr ""
+
+#~ msgid "80.3 ms"
+#~ msgstr ""
+
+#~ msgid "median disparity ``20.00 px``"
+#~ msgstr ""
+
+#~ msgid "depth"
+#~ msgstr ""
+
+#~ msgid "0.4 ms"
+#~ msgstr ""
+
+#~ msgid "median depth ``2.500 m``"
+#~ msgstr ""
+
+#~ msgid "``96.8 %`` of pixels valid"
+#~ msgstr ""
+
+#~ msgid "``296355`` points"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The median disparity equals the injected"
+#~ " shift and the median depth equals"
+#~ " :math:`f_x \\lvert T_x \\rvert / d`,"
+#~ " which is the property the unit "
+#~ "tests assert. Suite level: 54 GTest "
+#~ "cases, 81.3 % line coverage."
 #~ msgstr ""
 

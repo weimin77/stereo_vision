@@ -197,11 +197,19 @@ the very end, so a `conan create` log finishes with
 [example] rectified 640x480
 ...
 [example] saved     disparity.png, depth.png (measurement) and disparity_color.png, depth_color.png (colour), plus cloud.pcd in example_output
+[example] elapsed   load 14.4 ms, run 403.9 ms, write 129.3 ms, total 547.6 ms
+[example] memory    peak 163.5 MB resident
 ```
 
-instead of with the coverage table. Look for that prefix, or run the binary directly from
+instead of with the coverage table. The example also reports cost: `elapsed` splits the wall clock
+into load (I/O for images and calibration), run (the algorithm) and write (the five artefacts), which
+frames the finer per-stage `timing` line above it; `memory` is the peak resident set — `ru_maxrss`
+from `getrusage` on POSIX, the peak working set on Windows. Both are measured, not estimated: on a
+640x480 pair they agree with `/usr/bin/time -v` to within 1 MB.
+
+Look for that prefix, or run the binary directly from
 `test_package/build/<profile>/`; `ctest -N` will never list it. Two switches keep their distance:
-`trigger_tests` in `metadata.json` governs the 57 GTest cases and the coverage report, while the
+`trigger_tests` in `metadata.json` governs the 64 GTest cases and the coverage report, while the
 example runs whenever the test package is built for the host (`can_run`), regardless of that switch.
 The example's exit code becomes the recipe's verdict, so a red example fails `conan create` with
 `test_package/main.cpp exited with code N` rather than a bare build error; a red example also skips
