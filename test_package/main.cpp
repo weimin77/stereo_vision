@@ -1,6 +1,7 @@
 #include <chrono>
 #include <cmath>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -47,31 +48,46 @@ double elapsed_ms(Clock::time_point from, Clock::time_point to) {
 }
 
 /**
- * @brief Peak resident set size of this process in MiB, or a negative value when the platform
- * cannot report it.
+ * @brief [en] Peak resident set size of this process in MiB, or a negative value when the platform
+ * cannot report it
+ * @brief [zh] 本进程的峰值常驻内存（MiB），平台无法报告时返回负值
  *
- * Peak, not current: ru_maxrss is the high-water mark, so one reading at the end covers the whole
- * process, including memory the writers have already released. Windows has no ru_maxrss; its peak
- * working set is the closest equivalent.
+ * Every platform is read through a mechanism that starts at zero in this process. `getrusage` is
+ * deliberately avoided on Linux: its `ru_maxrss` is inherited across `fork` and not reset by
+ * `exec`, so a program started from a heavy parent (conan's Python, an IDE) reports the parent's
+ * high-water mark as its own — measured here as 72 MB against a true 33 MB. `/proc/self/status`
+ * `VmHWM` is reset by `exec`, so it reports this process only.
  */
 double peak_resident_mb() {
 #if defined(_WIN32)
+    // PeakWorkingSetSize belongs to this process object and is created fresh by spawn.
     PROCESS_MEMORY_COUNTERS_EX counters{};
     if (GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&counters),
                              sizeof(counters)) == 0) {
         return -1.0;
     }
     return static_cast<double>(counters.PeakWorkingSetSize) / kMib;
-#else
+#elif defined(__APPLE__)
+    // BSD resets the resource usage on exec, so ru_maxrss here is this process's own peak.
     struct rusage usage {};
     if (getrusage(RUSAGE_SELF, &usage) != 0) {
         return -1.0;
     }
-#if defined(__APPLE__)
-    return static_cast<double>(usage.ru_maxrss) / kMib; // bytes on macOS,
+    return static_cast<double>(usage.ru_maxrss) / kMib; // bytes on macOS
 #else
-    return static_cast<double>(usage.ru_maxrss) / kKib; // kilobytes elsewhere
-#endif
+    std::ifstream status("/proc/self/status");
+    std::string line;
+    while (std::getline(status, line)) {
+        if (line.rfind("VmHWM:", 0) != 0) {
+            continue;
+        }
+        const std::size_t first = line.find_first_of("0123456789");
+        if (first == std::string::npos) {
+            return -1.0;
+        }
+        return static_cast<double>(std::stol(line.substr(first))) / kKib; // reported in kB
+    }
+    return -1.0;
 #endif
 }
 

@@ -8,11 +8,21 @@
     "Pipeline::set_input_image()."
   ],
 
-  "profile": "balanced",
+  "profile": "minimal",
   "profiles": {
+    "_comment": [
+      "minimal uses MODE_SGBM: five directions, single pass, and no full-image cost volume,",
+      "so its peak memory does not scale with height x width x numDisparities. Measured on",
+      "this pair: 34.1 MB peak and 193 ms match, against 38.4 MB / 51 ms for the 3-way sweep",
+      "and 163.2 MB / 330 ms for the eight-direction one. Median disparity 74.13 px against",
+      "74.44 and 74.94 (scene ground truth 73.26 px), valid 72.4 % against 74.8 and 74.9.",
+      "It is the cheapest in memory, not the fastest: raise the profile when wall-clock time",
+      "or the extra valid pixels matter more."
+    ],
+    "minimal": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "sgbm", "uniqueness_ratio": 5},
+    "fast": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "3way", "uniqueness_ratio": 5},
     "balanced": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "hh", "uniqueness_ratio": 5},
-    "detail": {"block_size": 3, "p1_factor": 8, "p2_factor": 64, "mode": "hh", "uniqueness_ratio": 5},
-    "fast": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "3way", "uniqueness_ratio": 5}
+    "detail": {"block_size": 3, "p1_factor": 8, "p2_factor": 64, "mode": "hh", "uniqueness_ratio": 5}
   },
 
   "calibration": {
@@ -46,7 +56,7 @@
   "block_size": 5,
   "p1_factor": 8,
   "p2_factor": 256,
-  "mode": "hh",
+  "mode": "sgbm",
   "uniqueness_ratio": 5,
   "pre_filter_cap": 31,
   "disp12_max_diff": 1,

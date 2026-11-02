@@ -197,15 +197,17 @@ the very end, so a `conan create` log finishes with
 [example] rectified 640x480
 ...
 [example] saved     disparity.png, depth.png (measurement) and disparity_color.png, depth_color.png (colour), plus cloud.pcd in example_output
-[example] elapsed   load 14.4 ms, run 403.9 ms, write 129.3 ms, total 547.6 ms
-[example] memory    peak 163.5 MB resident
+[example] elapsed   load 14.7 ms, run 271.5 ms, write 136.0 ms, total 423.2 ms
+[example] memory    peak 34.1 MB resident
 ```
 
 instead of with the coverage table. The example also reports cost: `elapsed` splits the wall clock
 into load (I/O for images and calibration), run (the algorithm) and write (the five artefacts), which
-frames the finer per-stage `timing` line above it; `memory` is the peak resident set — `ru_maxrss`
-from `getrusage` on POSIX, the peak working set on Windows. Both are measured, not estimated: on a
-640x480 pair they agree with `/usr/bin/time -v` to within 1 MB.
+frames the finer per-stage `timing` line above it; `memory` is the peak resident set — `/proc` `VmHWM`
+on Linux, `ru_maxrss` on macOS, the peak working set on Windows. All three start at zero in this
+process, which matters: Linux's `ru_maxrss` is inherited across `fork` and not reset by `exec`, so
+reading it instead reported 72 MB for a run that truly peaks at 34 MB whenever the parent was heavy
+(conan's Python). The values agree with `/usr/bin/time -v` to within 1 MB.
 
 Look for that prefix, or run the binary directly from
 `test_package/build/<profile>/`; `ctest -N` will never list it. Two switches keep their distance:

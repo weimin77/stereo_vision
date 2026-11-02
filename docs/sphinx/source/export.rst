@@ -125,8 +125,9 @@ _`Algorithm benchmark from test frame`
 --------------------------------------
 
 Measured on the BlenderProc oven scene shipped in ``test_package/resources/oven``: a 640x480 pair,
-``fx = fy = 140 px``, ``baseline = 0.06 m``, window ``32 + 96``. Single frame, Release build, one
-representative run — timings on a shared machine move by tens of percent, the agreement columns do not:
+``fx = fy = 140 px``, ``baseline = 0.06 m``, window ``32 + 96``, ``profile = "minimal"``
+(``MODE_SGBM``, five directions). Single frame, Release build, one representative run — timings on a
+shared machine move by tens of percent, the agreement columns do not:
 
 .. table:: single-frame cost and agreement
    :name: test results
@@ -135,17 +136,36 @@ representative run — timings on a shared machine move by tens of percent, the 
    ================ =========== ==========================================
    phase            time        result
    ================ =========== ==========================================
-   load             14.4 ms     config, calibration and both images
-   run              403.9 ms    of which rectify 4.8 + match 308.6 + depth 2.3
-   write            129.3 ms    five artefacts, ``cloud.pcd`` is 2.7 MB
-   total            547.6 ms    peak resident 163.5 MB
+   load             14.7 ms     config, calibration and both images
+   run              271.5 ms    of which rectify 5.4 + match 185.2 + depth 2.3
+   write            136.0 ms    five artefacts, ``cloud.pcd`` is 2.7 MB
+   total            423.2 ms    peak resident 34.1 MB
    ---------------- ----------- ------------------------------------------
-   coverage         —           ``74.9 %`` of pixels valid
-   disparity p50    —           ``74.94 px`` against ``73.26 px`` in the ground truth
-   depth p50        —           ``0.1121 m`` against ``0.1129 m`` in the ground truth
-   point cloud      —           ``230033`` points
+   coverage         —           ``72.4 %`` of pixels valid
+   disparity p50    —           ``74.13 px`` against ``73.26 px`` in the ground truth
+   depth p50        —           ``0.1133 m`` against ``0.1129 m`` in the ground truth
+   point cloud      —           ``222404`` points
    ================ =========== ==========================================
 
 ``run`` is larger than the sum of its three stages because the stage timers stop at the conversion to
 depth; the validity histogram and the six percentiles over the disparity and depth buffers are inside
-``run`` but belong to no stage. Suite level: 64 GTest cases, 82.2 % line coverage.
+``run`` but belong to no stage.
+
+The search mode is the one parameter that changes memory by an order of magnitude, because the
+eight-direction sweep (``MODE_HH``) keeps a full ``width x height x numDisparities`` cost volume while
+the others keep a single row. ``minimal`` is the cheapest in memory, not the fastest: ``fast`` gives
+up 4 MB and 1.4 % of valid pixels to run nearly four times sooner.
+
+.. table:: search mode trade-off on the same pair
+   :name: mode trade-off
+   :align: center
+
+   ============ ========== =========== =============== =========== ============
+   profile      mode       peak RSS    match           valid       disparity p50
+   ============ ========== =========== =============== =========== ============
+   minimal      ``sgbm``   34.1 MB     193 ms          72.4 %      ``74.13 px``
+   fast         ``3way``   38.4 MB     51 ms           74.8 %      ``74.44 px``
+   balanced     ``hh``     163.2 MB    330 ms          74.9 %      ``74.94 px``
+   ============ ========== =========== =============== =========== ============
+
+Suite level: 64 GTest cases, 82.7 % line coverage.
