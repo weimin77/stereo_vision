@@ -179,14 +179,16 @@ TEST(Config, LoadsTheSampleConfiguration) {
     std::string error;
     ASSERT_TRUE(sv::config_load(resource("sgbm_config.json"), config, &error)) << error;
 
-    EXPECT_EQ(config.profile, "balanced");
+    EXPECT_EQ(config.profile, "minimal");
     EXPECT_EQ(config.matcher.block_size, 5);
-    EXPECT_EQ(config.matcher.mode, sv::SgbmMode::Hh);
+    EXPECT_EQ(config.matcher.mode, sv::SgbmMode::Sgbm);
     EXPECT_EQ(config.matcher.num_disparities, 0);
-    EXPECT_NEAR(config.working_near_m, 0.5, 1e-9);
-    EXPECT_NEAR(config.working_far_m, 5.0, 1e-9);
+    EXPECT_NEAR(config.working_near_m, 0.07, 1e-9);
+    EXPECT_NEAR(config.working_far_m, 0.25, 1e-9);
     EXPECT_EQ(config.stereo_yml, "stereo.yml");
-    EXPECT_EQ(config.output_prefix, "stereo");
+    EXPECT_EQ(config.left_mono_yml, "left_mono.yml");
+    EXPECT_EQ(config.right_mono_yml, "right_mono.yml");
+    EXPECT_EQ(config.output_prefix, "oven");
     EXPECT_TRUE(config.cloud_binary);
     EXPECT_FALSE(config.cloud_keep_invalid);
 }

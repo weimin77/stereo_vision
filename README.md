@@ -178,7 +178,7 @@ combination), which takes about 5–10 minutes; later runs hit the cache. `metad
 OpenCV and roughly double the wait.
 
 `conan create` also runs `test_package/main.cpp`, which is a complete example rather than a stub: it
-loads the BlenderProc oven scene shipped in `test_package/resources/oven/` (a 640×480 pair, its
+loads the BlenderProc oven scene shipped in `test_package/resources/` (a 640×480 pair, its
 calibration as `stereo.yml` plus per-camera `left_mono.yml`/`right_mono.yml`, and
 `sgbm_config.json`), rectifies, matches, and prints the report before writing five artefacts into
 `example_output/` next to the binary: `disparity.png` and `depth.png` in their measurement encodings,
@@ -343,7 +343,7 @@ project-root/
 │   └── images/               # Static images for doxygen/sphinx system
 └── test_package/             # Test project
     ├── export/               # Log for testing results
-    ├── resources/            # Test resources: unit fixtures plus the oven/ example dataset
+    ├── resources/            # Test resources: the BlenderProc oven scene (images, yml, config)
     ├── test/
     │   ├── unit/             # Standing unit tests (coverage target)
     │   ├── stress/           # GTest stress / performance tests

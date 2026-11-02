@@ -93,7 +93,7 @@ double peak_resident_mb() {
 
 // test_package/conanfile.py copies resources/ next to the build and defines RESOURCES_PATH,
 // so this program never depends on the directory it is started from.
-std::string resource(const std::string& name) { return std::string(RESOURCES_PATH) + "/oven/" + name; }
+std::string resource(const std::string& name) { return std::string(RESOURCES_PATH) + "/" + name; }
 
 bool load_config(sv::Config& config) {
     std::string error;

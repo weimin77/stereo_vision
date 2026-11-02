@@ -9,7 +9,7 @@
 
 namespace {
 
-/// The BlenderProc oven scene shipped in resources/oven, rendered at 640x480 from a 320x240 rig.
+/// The BlenderProc oven scene shipped in resources/, rendered at 640x480 from a 320x240 rig.
 /// The reference values below are the medians of disparity_gt_left.npy / depth_gt_left.npy after
 /// scaling the 320-pixel ground truth to the 640-pixel pair.
 constexpr double kSceneFocalPx = 140.0;
@@ -19,7 +19,7 @@ constexpr double kSceneGroundTruthDepthM = 0.11286;
 constexpr double kDisparityTolerancePx = 3.0;
 constexpr double kDepthToleranceM = 0.005;
 
-std::string resource(const std::string& name) { return std::string(RESOURCES_PATH) + "/oven/" + name; }
+std::string resource(const std::string& name) { return std::string(RESOURCES_PATH) + "/" + name; }
 
 sv::Pipeline oven_pipeline() {
     sv::Config config;

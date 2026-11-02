@@ -4,7 +4,7 @@ M1: !!opencv-matrix
    rows: 3
    cols: 3
    dt: d
-   data: [ 500., 0., 320., 0., 500., 240., 0., 0., 1. ]
+   data: [ 140., 0., 319.5, 0., 140., 239.5, 0., 0., 1. ]
 D1: !!opencv-matrix
    rows: 1
    cols: 5
@@ -14,7 +14,7 @@ M2: !!opencv-matrix
    rows: 3
    cols: 3
    dt: d
-   data: [ 500., 0., 320., 0., 500., 240., 0., 0., 1. ]
+   data: [ 140., 0., 319.5, 0., 140., 239.5, 0., 0., 1. ]
 D2: !!opencv-matrix
    rows: 1
    cols: 5
@@ -29,4 +29,4 @@ T: !!opencv-matrix
    rows: 3
    cols: 1
    dt: d
-   data: [ -0.1, 0., 0. ]
+   data: [ -0.06, 0., 0. ]

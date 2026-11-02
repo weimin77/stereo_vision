@@ -155,7 +155,7 @@ the pixels both variants get right, barely moves.
 _`Algorithm benchmark from test frame`
 --------------------------------------
 
-Measured on the BlenderProc oven scene shipped in ``test_package/resources/oven``: a 640x480 pair,
+Measured on the BlenderProc oven scene shipped in ``test_package/resources``: a 640x480 pair,
 ``fx = fy = 140 px``, ``baseline = 0.06 m``, window ``32 + 96``, ``profile = "minimal"``
 (``MODE_SGBM``, five directions). Single frame, Release build, one representative run — timings on a
 shared machine move by tens of percent, the agreement columns do not:
