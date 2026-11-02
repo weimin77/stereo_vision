@@ -10,8 +10,8 @@ the entries below are the initial state before the first automated release.
 
 - Epipolar rectification: `stereoRectify`, undistort maps, common-ROI cropping, rebased `Q`/`P`,
   and a validity mask built by remapping a white image
-- `cv::StereoSGBM` wrapper with padding, 1/16 px fixed-point unpacking, search-window clipping and a
-  sub-pixel left-right consistency check
+- `cv::StereoSGBM` wrapper with padding, 1/16 px fixed-point unpacking and search-window clipping,
+  running a single left-to-right pass
 - Depth from `Z = fx * |Tx| / (d - doffs)`, honouring the principal-point offset between the
   rectified views
 - Point cloud back-projection in the rectified left camera frame, written as PCD or PLY (ascii or

@@ -163,6 +163,39 @@ TEST(Depth, ClampRejectsOutOfRangeDepths) {
     EXPECT_FALSE(std::isfinite(depth.data[1]));
 }
 
+TEST(Sgbm, DoesNotRejectPixelsForALeftRightMismatch) {
+    // The matcher runs once, so there is no right-to-left map to compare against. A pixel that
+    // the old consistency check would have thrown away must now survive: an occluded bar, where
+    // the left view sees a surface the right view does not.
+    const sv::Image left = synthetic::blocky_texture(160, 120, 29U);
+    sv::Image right = synthetic::shift_horizontal(left, kKnownShift);
+    // Punch a hole in the right view so no left pixel there has a consistent partner.
+    for (int y = 40; y < 80; ++y) {
+        for (int x = 40; x < 120; ++x) {
+            right.data[(static_cast<std::size_t>(y) * right.width) + x] = 0;
+        }
+    }
+
+    sv::DisparityImage disparity;
+    std::string error;
+    ASSERT_TRUE(sv::sgbm_compute(left, right, {}, known_shift_params(), disparity, &error)) << error;
+
+    std::size_t hole_finite = 0;
+    for (int y = 40; y < 80; ++y) {
+        for (int x = 40; x < 120; ++x) {
+            if (std::isfinite(disparity.data[(static_cast<std::size_t>(y) * disparity.width) + x])) {
+                ++hole_finite;
+            }
+        }
+    }
+    // Measured on this input: 1757/3200 with the single pass, 1017/3200 when the second pass
+    // still ran and its consistency check discarded the mismatched half. The threshold sits
+    // between the two, so re-adding the check turns this test red instead of quietly costing
+    // another 90 ms per frame.
+    constexpr std::size_t kHolePixels = 40U * 80U;
+    EXPECT_GT(hole_finite, kHolePixels * 42U / 100U) << hole_finite << " of " << kHolePixels;
+}
+
 TEST(PointCloud, BackProjectsDepthWithThePinholeModel) {
     const sv::RectifyGeometry geometry = identity_geometry(4, 2);
     sv::DepthImage depth;

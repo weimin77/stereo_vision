@@ -48,8 +48,9 @@ epipolar rectification, SGBM matching, disparity-to-depth conversion and point c
 - Agentic Coding workspace (`/workspace/`, git-ignored) — also holds the CLI consumer
 - Epipolar rectification with common-ROI cropping, rebased `Q`/`P` and a validity mask from remapping
   a white image
-- `cv::StereoSGBM` wrapper: padding, 1/16 px fixed-point unpacking, search-window clipping and a
-  sub-pixel left-right consistency check
+- `cv::StereoSGBM` wrapper running a single left-to-right pass: padding, 1/16 px fixed-point
+  unpacking, search-window and image-bound clipping. No second pass means no left-right
+  consistency check, which halves the match stage (91 ms against 182 ms on the 640x480 pair)
 - Depth from `Z = fx·|Tx| / (d − doffs)`, so a principal-point offset no longer skews the cloud
 - Point cloud in the rectified left camera frame, geometry only (`x y z`, no RGB); PCD and PLY
   writers (ascii or binary) without PCL
@@ -197,7 +198,7 @@ the very end, so a `conan create` log finishes with
 [example] rectified 640x480
 ...
 [example] saved     disparity.png, depth.png (measurement) and disparity_color.png, depth_color.png (colour), plus cloud.pcd in example_output
-[example] elapsed   load 14.7 ms, run 271.5 ms, write 136.0 ms, total 423.2 ms
+[example] elapsed   load 14.4 ms, run 197.8 ms, write 143.5 ms, total 355.7 ms
 [example] memory    peak 34.1 MB resident
 ```
 

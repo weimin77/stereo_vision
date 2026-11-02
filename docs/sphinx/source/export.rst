@@ -136,15 +136,15 @@ shared machine move by tens of percent, the agreement columns do not:
    ================ =========== ==========================================
    phase            time        result
    ================ =========== ==========================================
-   load             14.7 ms     config, calibration and both images
-   run              271.5 ms    of which rectify 5.4 + match 185.2 + depth 2.3
-   write            136.0 ms    five artefacts, ``cloud.pcd`` is 2.7 MB
-   total            423.2 ms    peak resident 34.1 MB
+   load             14.4 ms     config, calibration and both images
+   run              197.8 ms    of which rectify 4.8 + match 94.6 + depth 2.6
+   write            143.5 ms    five artefacts, ``cloud.pcd`` is 2.9 MB
+   total            355.7 ms    peak resident 34.1 MB
    ---------------- ----------- ------------------------------------------
-   coverage         —           ``72.4 %`` of pixels valid
-   disparity p50    —           ``74.13 px`` against ``73.26 px`` in the ground truth
-   depth p50        —           ``0.1133 m`` against ``0.1129 m`` in the ground truth
-   point cloud      —           ``222404`` points
+   coverage         —           ``77.6 %`` of pixels valid
+   disparity p50    —           ``74.19 px`` against ``73.26 px`` in the ground truth
+   depth p50        —           ``0.1132 m`` against ``0.1129 m`` in the ground truth
+   point cloud      —           ``238332`` points
    ================ =========== ==========================================
 
 ``run`` is larger than the sum of its three stages because the stage timers stop at the conversion to
@@ -153,8 +153,9 @@ depth; the validity histogram and the six percentiles over the disparity and dep
 
 The search mode is the one parameter that changes memory by an order of magnitude, because the
 eight-direction sweep (``MODE_HH``) keeps a full ``width x height x numDisparities`` cost volume while
-the others keep a single row. ``minimal`` is the cheapest in memory, not the fastest: ``fast`` gives
-up 4 MB and 1.4 % of valid pixels to run nearly four times sooner.
+the others keep a single row. ``minimal`` is the cheapest in memory, not the fastest: ``fast`` holds
+the same memory and runs nearly four times sooner, and it is slightly more accurate too. Choose
+``minimal`` when the target cannot afford the 3-way sweep's working set, not for speed.
 
 .. table:: search mode trade-off on the same pair
    :name: mode trade-off
@@ -163,9 +164,9 @@ up 4 MB and 1.4 % of valid pixels to run nearly four times sooner.
    ============ ========== =========== =============== =========== ============
    profile      mode       peak RSS    match           valid       disparity p50
    ============ ========== =========== =============== =========== ============
-   minimal      ``sgbm``   34.1 MB     193 ms          72.4 %      ``74.13 px``
-   fast         ``3way``   38.4 MB     51 ms           74.8 %      ``74.44 px``
-   balanced     ``hh``     163.2 MB    330 ms          74.9 %      ``74.94 px``
+   minimal      ``sgbm``   34.3 MB     92 ms           77.6 %      ``74.19 px``
+   fast         ``3way``   34.2 MB     24 ms           78.9 %      ``74.06 px``
+   balanced     ``hh``     162.1 MB    178 ms          79.0 %      ``74.69 px``
    ============ ========== =========== =============== =========== ============
 
-Suite level: 64 GTest cases, 82.7 % line coverage.
+Suite level: 65 GTest cases, 81.7 % line coverage.

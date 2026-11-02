@@ -35,33 +35,14 @@ std::string lower(const std::string& text) {
 
 /// Keys this schema understands; anything else is reported and ignored, never fatal.
 const std::set<std::string>& known_keys() {
-    static const std::set<std::string> keys = {"profile",
-                                               "profiles",
-                                               "calibration",
-                                               "rectify",
-                                               "working_depth_m",
-                                               "min_disparity",
-                                               "num_disparities",
-                                               "padding",
-                                               "block_size",
-                                               "p1_factor",
-                                               "p2_factor",
-                                               "mode",
-                                               "uniqueness_ratio",
-                                               "pre_filter_cap",
-                                               "disp12_max_diff",
-                                               "speckle_window_size",
-                                               "speckle_range",
-                                               "preprocess",
-                                               "clahe_clip_limit",
-                                               "clahe_tile_grid",
-                                               "lr_max_diff_px",
-                                               "median_size",
-                                               "camera",
-                                               "camera_file",
-                                               "depth",
-                                               "pointcloud",
-                                               "output"};
+    static const std::set<std::string> keys = {
+        "profile",          "profiles",       "calibration",      "rectify",
+        "working_depth_m",  "min_disparity",  "num_disparities",  "padding",
+        "block_size",       "p1_factor",      "p2_factor",        "mode",
+        "uniqueness_ratio", "pre_filter_cap", "disp12_max_diff",  "speckle_window_size",
+        "speckle_range",    "preprocess",     "clahe_clip_limit", "clahe_tile_grid",
+        "median_size",      "camera",         "camera_file",      "depth",
+        "pointcloud",       "output"};
     return keys;
 }
 
@@ -159,7 +140,6 @@ void apply_matcher(const cv::FileNode& node, Config& config) {
     read_int(node, "speckle_window_size", config.matcher.speckle_window_size);
     read_int(node, "speckle_range", config.matcher.speckle_range);
     read_bool(node, "padding", config.matcher.padding);
-    read_double(node, "lr_max_diff_px", config.matcher.lr_max_diff_px);
 
     std::string mode;
     if (read_string(node, "mode", mode) && !parse_mode(mode, config.matcher.mode)) {

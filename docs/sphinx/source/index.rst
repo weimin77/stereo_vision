@@ -12,7 +12,7 @@ _`Main Features`
 ----------------
 
 - Rectification with common-ROI cropping, rebased Q/P and a validity mask
-- cv::StereoSGBM wrapper with padding, 1/16 px unpacking and a left-right check
+- cv::StereoSGBM wrapper with padding and 1/16 px unpacking, one left-to-right pass
 - Depth from the rectified geometry, then a point cloud in the left camera frame
 - PCD and PLY output without a PCL dependency
 - Conan-based dependency management, cross-platform build support

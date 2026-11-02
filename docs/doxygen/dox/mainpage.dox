@@ -17,12 +17,12 @@
  *
  * @section features_sec [en] Features
  *     - Rectification with common-ROI cropping, rebased Q/P and a validity mask
- *     - cv::StereoSGBM with padding, 1/16 px unpacking and a sub-pixel left-right check
+ *     - cv::StereoSGBM in one left-to-right pass, with padding and 1/16 px unpacking
  *     - Depth from Z = fx * |Tx| / (d - doffs), so a principal-point offset does not skew the cloud
  *     - PCD and PLY writers (ascii or binary) without a PCL dependency
  * @section features_sec [zh] 特性
  *     - 极线校正：公共有效区裁剪、Q/P 主点修正、有效性掩膜
- *     - cv::StereoSGBM 封装：padding、1/16 像素反定点、亚像素左右一致性检查
+ *     - cv::StereoSGBM 封装：单次左到右匹配，padding 与 1/16 像素反定点
  *     - 深度按 Z = fx * |Tx| / (d - doffs) 计算，主点偏移不会让点云整体侧移
  *     - PCD 与 PLY 写出（ascii 或 binary），不依赖 PCL
  *
@@ -53,7 +53,7 @@
  *     - sv_image_io: jpg/png/bmp input, 16-bit png and 32-bit tif output, optional colour view
  *     - sv_calibration: stereo.yml plus optional per-camera intrinsics
  *     - sv_rectify: stereoRectify, undistort maps, common ROI, validity mask
- *     - sv_sgbm: cv::StereoSGBM wrapper with the left-right check
+ *     - sv_sgbm: cv::StereoSGBM wrapper, one left-to-right pass
  *     - sv_depth: disparity to metres
  *     - sv_pointcloud: back-projection and PCD/PLY writers
  *     - sv_config: sgbm_config.json parsing and search-window derivation
