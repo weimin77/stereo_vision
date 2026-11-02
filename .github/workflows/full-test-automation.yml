@@ -113,7 +113,10 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: TestResult-log-${{ matrix.os }}-${{ env.timestamp }}
-          path: test_package/test/export/TestResult.log
+          # TestResult.log is ctest's; ExampleResult.log is test_package/main.cpp's own output.
+          path: |
+            test_package/test/export/TestResult.log
+            test_package/test/export/ExampleResult.log
           if-no-files-found: warn
 
       - name: Upload code coverage

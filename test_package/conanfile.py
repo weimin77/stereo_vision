@@ -1,4 +1,5 @@
 from conan import ConanFile
+from conan.errors import ConanException
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.build import can_run, cross_building
 from conan.tools.files import copy
@@ -190,8 +191,7 @@ class PackageTestConan(ConanFile):
 
         # scripting in test_package/main.cpp
         if can_run(self):
-            cmd = os.path.join(self.cpp.build.bindirs[0], "main")
-            self.run(cmd, env="conanrun")
+            self._run_example()
 
         # test cases in test_pacakge/test/*.cpp
         if self._tests_enabled():
@@ -214,6 +214,54 @@ class PackageTestConan(ConanFile):
                 raise suite_error from coverage_error
             if coverage_error is not None:
                 raise coverage_error
+
+    def _run_example(self):
+        """Run test_package/main.cpp with an output a reader can actually find.
+
+        A plain `self.run()` lets the program's seven result lines land between the build log and
+        ctest, carry no prefix, and read as more compiler noise. Capturing them here gives them a
+        header, a copy in test/export/ExampleResult.log, and a shape CI logs can grep.
+        """
+        cmd = os.path.join(self.cpp.build.bindirs[0], 'main')
+        self.output.highlight('[example] running test_package/main.cpp')
+
+        # conanrun carries the run-time library paths; without it a shared build cannot resolve
+        # the OpenCV libraries it was just linked against.
+        env = VirtualRunEnv(self).environment().vars(self)
+        with env.apply():
+            proc = subprocess.run([cmd], cwd=self.build_folder, capture_output=True, text=True, check=False)
+
+        for line in proc.stdout.splitlines():
+            self.output.info(f'[example] {line}')
+        for line in proc.stderr.splitlines():
+            self.output.warning(f'[example] {line}')
+
+        self._archive_example_output(proc.stdout, proc.stderr, proc.returncode)
+
+        if proc.returncode != 0:
+            raise ConanException(f'test_package/main.cpp exited with code {proc.returncode}')
+
+    def _archive_example_output(self, stdout, stderr, returncode):
+        """`<recipe>/test/export/ExampleResult.log`, so the example's verdict outlives the terminal.
+
+        It follows the same `saving_tests_log` switch as TestResult.log: when the switch is off no
+        artefact is kept, and a leftover from an earlier run is dropped rather than left behind.
+        """
+        target_folder = self.recipe_folder + sep + 'test' + sep + 'export'
+        target_file = target_folder + sep + 'ExampleResult.log'
+        if not self.metadata.get('saving_tests_log'):
+            if os.path.exists(target_file):
+                os.remove(target_file)
+            return
+
+        os.makedirs(target_folder, exist_ok=True)
+        with open(target_file, 'w', encoding='utf-8') as f:
+            f.write('$ main\n')
+            f.write(stdout)
+            if stderr:
+                f.write('\n[stderr]\n')
+                f.write(stderr)
+            f.write(f'\n[exit] {returncode}\n')
 
     def _run_ctest_suite(self):
         # ctest prints a failed case only on request, and CMake.test has no `ctest_args`; Popen inherits os.environ.

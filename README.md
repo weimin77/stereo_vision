@@ -181,6 +181,15 @@ calibration as `stereo.yml` plus per-camera `left_mono.yml`/`right_mono.yml`, an
 scene's own ground truth puts the median disparity at 73.26 px and the median depth at
 0.1129 m, so the program exits non-zero when the result drifts away from that.
 
+`main.cpp` is a program, not a GTest binary, so it is **not** a ctest case: `test_package/conanfile.py`
+runs it in `test()` and echoes every line with an `[example]` prefix, and copies the same text to
+`test_package/test/export/ExampleResult.log`. Look for that prefix, or run the binary directly from
+`test_package/build/<profile>/`; `ctest -N` will never list it. Two switches keep their distance:
+`trigger_tests` in `metadata.json` governs the 57 GTest cases and the coverage report, while the
+example runs whenever the test package is built for the host (`can_run`), regardless of that switch.
+The example's exit code becomes the recipe's verdict, so a red example fails `conan create` with
+`test_package/main.cpp exited with code N` rather than a bare build error.
+
 cross-build to host device (assume toolchain and profile are ready):
 
 ```bash

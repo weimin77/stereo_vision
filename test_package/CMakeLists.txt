@@ -86,13 +86,11 @@ endfunction()
 
 
 function(enable_main_coverage)
-    find_package(GTest REQUIRED)
-    include(GoogleTest)
-
-    target_link_libraries(main PRIVATE GTest::gtest)
-    enable_testing()
-    gtest_discover_tests(main)
-
+    # main.cpp is a program, not a GTest binary: it defines no TEST macro. gtest_discover_tests
+    # would still run it at build time with --gtest_list_tests, register nothing, swallow its
+    # output, and turn any non-zero exit into a bare "Error 2 while executing" that points at
+    # cmake.build() instead of at the example. Only the instrumentation belongs here; the
+    # conanfile runs the program and reports which check failed.
     apply_coverage_flags(main)
 endfunction()
 
