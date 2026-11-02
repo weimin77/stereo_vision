@@ -67,14 +67,14 @@ class PipelineHandle {
         }
     }
 
-    void save_disparity_image(const std::string& path) const {
-        if (!pipeline_.save_disparity_image(path)) {
+    void save_disparity_image(const std::string& path, bool colorize) const {
+        if (!pipeline_.save_disparity_image(path, colorize)) {
             throw std::runtime_error(pipeline_.last_error());
         }
     }
 
-    void save_depth_image(const std::string& path) const {
-        if (!pipeline_.save_depth_image(path)) {
+    void save_depth_image(const std::string& path, bool colorize) const {
+        if (!pipeline_.save_depth_image(path, colorize)) {
             throw std::runtime_error(pipeline_.last_error());
         }
     }
@@ -244,23 +244,23 @@ PYBIND11_MODULE(stereo_vision_python, m) {
 
     m.def(
         "disparity_save",
-        [](const std::string& path, const sv::DisparityImage& disparity) {
+        [](const std::string& path, const sv::DisparityImage& disparity, bool colorize) {
             std::string error;
-            if (!sv::disparity_save(path, disparity, &error)) {
+            if (!sv::disparity_save(path, disparity, &error, colorize)) {
                 throw std::runtime_error(error);
             }
         },
-        py::arg("path"), py::arg("disparity"));
+        py::arg("path"), py::arg("disparity"), py::arg("colorize") = false);
 
     m.def(
         "depth_save",
-        [](const std::string& path, const sv::DepthImage& depth) {
+        [](const std::string& path, const sv::DepthImage& depth, bool colorize) {
             std::string error;
-            if (!sv::depth_save(path, depth, &error)) {
+            if (!sv::depth_save(path, depth, &error, colorize)) {
                 throw std::runtime_error(error);
             }
         },
-        py::arg("path"), py::arg("depth"));
+        py::arg("path"), py::arg("depth"), py::arg("colorize") = false);
 
     m.def(
         "pointcloud_save",
@@ -281,8 +281,9 @@ PYBIND11_MODULE(stereo_vision_python, m) {
         .def("disparity", &PipelineHandle::disparity, "Cached disparity map (copy)")
         .def("depth", &PipelineHandle::depth, "Cached depth map (copy)")
         .def("pointcloud", &PipelineHandle::pointcloud, "Point cloud built from the depth map (copy)")
-        .def("save_disparity_image", &PipelineHandle::save_disparity_image, py::arg("path"))
-        .def("save_depth_image", &PipelineHandle::save_depth_image, py::arg("path"))
+        .def("save_disparity_image", &PipelineHandle::save_disparity_image, py::arg("path"),
+             py::arg("colorize") = false)
+        .def("save_depth_image", &PipelineHandle::save_depth_image, py::arg("path"), py::arg("colorize") = false)
         .def("save_pointcloud", &PipelineHandle::save_pointcloud, py::arg("path"))
         .def("report", &PipelineHandle::report, py::return_value_policy::copy);
 

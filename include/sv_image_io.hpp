@@ -17,6 +17,9 @@ inline constexpr double kDepthPngScale = 1000.0;
 /// Largest value a 16-bit sample can hold.
 inline constexpr int kSample16Max = 65535;
 
+/// Number of levels a colourised sample is quantised to, one per colormap entry.
+inline constexpr int kColorLevels = 256;
+
 /**
  * @brief [en] Whether the path ends in jpg, jpeg, png or bmp
  * @brief [zh] 判断路径扩展名是否为 jpg、jpeg、png 或 bmp
@@ -56,27 +59,29 @@ bool image_save_png(const std::string& path, const Image& image,
 /**
  * @brief [en] Save a disparity map; png is 16-bit x16 fixed point, tif is 32-bit float
  * @brief [zh] 保存视差图；png 为 16 位 x16 定点，tif 为 32 位浮点
- * @param path output path, png/tif/tiff / 输出路径，png/tif/tiff
+ * @param path output path, png/tif/tiff, or png/jpg/bmp when colorizing / 输出路径
  * @param disparity map in pixels, NaN marks invalid / 视差图，NaN 表示无效
  * @param error optional message, written on failure / 失败时写入原因
+ * @param colorize write an 8-bit colour map for viewing instead of the measurement encoding
  * @return true on success
  * @since 1.0
  * @exporter
  */
-bool disparity_save(const std::string& path, const DisparityImage& disparity,
-                    std::string* error); // NOLINT(bugprone-easily-swappable-parameters)
+bool disparity_save(const std::string& path, const DisparityImage& disparity, std::string* error,
+                    bool colorize = false); // NOLINT(bugprone-easily-swappable-parameters)
 
 /**
  * @brief [en] Save a depth map; png is 16-bit millimetres, tif is 32-bit float metres
  * @brief [zh] 保存深度图；png 为 16 位毫米，tif 为 32 位浮点米
- * @param path output path, png/tif/tiff / 输出路径，png/tif/tiff
+ * @param path output path, png/tif/tiff, or png/jpg/bmp when colorizing / 输出路径
  * @param depth map in metres, NaN marks invalid / 深度图，NaN 表示无效
  * @param error optional message, written on failure / 失败时写入原因
+ * @param colorize write an 8-bit colour map for viewing instead of the measurement encoding
  * @return true on success
  * @since 1.0
  * @exporter
  */
-bool depth_save(const std::string& path, const DepthImage& depth,
-                std::string* error); // NOLINT(bugprone-easily-swappable-parameters)
+bool depth_save(const std::string& path, const DepthImage& depth, std::string* error,
+                bool colorize = false); // NOLINT(bugprone-easily-swappable-parameters)
 
 } // namespace sv

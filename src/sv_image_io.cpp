@@ -83,6 +83,70 @@ cv::Mat to_cv(const Image& image) {
     return mat;
 }
 
+constexpr double kLevelMax = static_cast<double>(kColorLevels - 1);
+constexpr double kUnitSpan = 1.0;
+constexpr double kSpanPadding = 0.5;
+constexpr std::uint8_t kMaskSet = 1;
+
+/// Every finite sample of a flat map lands on the same level, so stretching it to the middle still shows it.
+struct Range {
+    double low = 0.0;
+    double high = kUnitSpan;
+};
+
+Range robust_range(const double (&anchor)[3]) { // NOLINT(cppcoreguidelines-avoid-c-arrays)
+    Range range{anchor[0], anchor[2]};
+    if (!(range.high > range.low)) {
+        range.low = anchor[1] - kSpanPadding;
+        range.high = range.low + kUnitSpan;
+    }
+    return range;
+}
+
+/// Thermal ramp for looking at, not for measuring: the 16-bit/f32 writers stay the measurement path.
+cv::Mat colorize_map(const std::vector<float>& values, int width, int height, bool positive_only, bool invert) {
+    double anchor[3] = {0.0, 0.0, 0.0}; // NOLINT(cppcoreguidelines-avoid-c-arrays)
+    percentiles(values, anchor);
+    const Range range = robust_range(anchor);
+
+    cv::Mat levels(height, width, CV_8UC1, cv::Scalar(0));
+    cv::Mat valid(height, width, CV_8UC1, cv::Scalar(0));
+    auto* level = levels.ptr<std::uint8_t>();
+    auto* mask = valid.ptr<std::uint8_t>();
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        const float value = values[i];
+        if (!std::isfinite(value) || (positive_only && value <= 0.0F)) {
+            continue;
+        }
+        double fraction = (static_cast<double>(value) - range.low) / (range.high - range.low);
+        fraction = std::clamp(fraction, 0.0, kUnitSpan);
+        if (invert) {
+            fraction = kUnitSpan - fraction;
+        }
+        level[i] = static_cast<std::uint8_t>(std::lround(fraction * kLevelMax));
+        mask[i] = kMaskSet;
+    }
+
+    cv::Mat color;
+    cv::applyColorMap(levels, color, cv::COLORMAP_TURBO);
+    // Black marks "no measurement" and stays distinct from the darkest ramp entry.
+    color.setTo(cv::Scalar::all(0), valid == 0);
+    return color;
+}
+
+bool unsupported_colorize_path(const std::string& path, std::string* error) {
+    const std::string ext = lower_extension(path);
+    if (is_tiff(ext)) {
+        set_error(error, "colorize writes 8-bit colour, so it cannot target a float .tif: " + path);
+        return true;
+    }
+    if (!is_image_extension(ext)) {
+        set_error(error, "colorized output accepts .png, .jpg, .jpeg or .bmp: " + path);
+        return true;
+    }
+    return false;
+}
+
 } // namespace
 
 
@@ -135,10 +199,20 @@ bool image_save_png(const std::string& path, const Image& image, std::string* er
     return write_atomically(path, to_cv(image), error);
 }
 
-bool disparity_save(const std::string& path, const DisparityImage& disparity, std::string* error) { // NOLINT
+bool disparity_save(const std::string& path, const DisparityImage& disparity, std::string* error, // NOLINT
+                    bool colorize) {
     if (!disparity_valid(disparity)) {
         set_error(error, "disparity map is empty or inconsistent");
         return false;
+    }
+
+    if (colorize) {
+        if (unsupported_colorize_path(path, error)) {
+            return false;
+        }
+        // Nearer surfaces are hotter: a larger disparity means a shorter distance.
+        return write_atomically(path, colorize_map(disparity.data, disparity.width, disparity.height, false, false),
+                                error);
     }
 
     const std::string ext = lower_extension(path);
@@ -167,10 +241,18 @@ bool disparity_save(const std::string& path, const DisparityImage& disparity, st
     return write_atomically(path, mat, error);
 }
 
-bool depth_save(const std::string& path, const DepthImage& depth, std::string* error) { // NOLINT
+bool depth_save(const std::string& path, const DepthImage& depth, std::string* error, bool colorize) { // NOLINT
     if (!depth_valid(depth)) {
         set_error(error, "depth map is empty or inconsistent");
         return false;
+    }
+
+    if (colorize) {
+        if (unsupported_colorize_path(path, error)) {
+            return false;
+        }
+        // Depth grows away from the camera, so the ramp is inverted: near stays hot, matching the disparity map.
+        return write_atomically(path, colorize_map(depth.data, depth.width, depth.height, true, true), error);
     }
 
     const std::string ext = lower_extension(path);

@@ -42,6 +42,7 @@
  *
  *     pipeline.save_disparity_image("out/disparity.png");
  *     pipeline.save_depth_image("out/depth.png");
+ *     pipeline.save_disparity_image("out/disparity_color.png", true);
  *     pipeline.save_pointcloud("out/cloud.ply");
  *     @endcode
  * @section usage_sec [zh] 用法
@@ -49,7 +50,7 @@
  *
  * @section modules_sec [en] Modules
  *     - sv_types: Image, DisparityImage, DepthImage, PointCloud, RectifyGeometry, RunReport
- *     - sv_image_io: jpg/png/bmp input, 16-bit png and 32-bit tif output
+ *     - sv_image_io: jpg/png/bmp input, 16-bit png and 32-bit tif output, optional colour view
  *     - sv_calibration: stereo.yml plus optional per-camera intrinsics
  *     - sv_rectify: stereoRectify, undistort maps, common ROI, validity mask
  *     - sv_sgbm: cv::StereoSGBM wrapper with the left-right check

@@ -54,6 +54,9 @@ epipolar rectification, SGBM matching, disparity-to-depth conversion and point c
 - Point cloud in the rectified left camera frame; PCD and PLY writers (ascii or binary) without PCL
 - Interface contract: images enter through `set_input_image()`, results leave through `get_*` and
   `save_*`; `run()` computes and writes nothing
+- `save_disparity_image()` / `save_depth_image()` take `colorize`: the default keeps the measurement
+  encoding (1/16 px png, millimetre png, float tif), `true` writes an 8-bit `COLORMAP_TURBO` view
+  stretched over the 5th–95th percentile, with invalid pixels black and near warm in both maps
 
 ## Agentic Coding Workspace
 
@@ -176,8 +179,9 @@ OpenCV and roughly double the wait.
 `conan create` also runs `test_package/main.cpp`, which is a complete example rather than a stub: it
 loads the BlenderProc oven scene shipped in `test_package/resources/oven/` (a 640×480 pair, its
 calibration as `stereo.yml` plus per-camera `left_mono.yml`/`right_mono.yml`, and
-`sgbm_config.json`), rectifies, matches, and prints the report before writing
-`disparity.png`, `depth.png` and `cloud.pcd` into `example_output/` next to the binary. The
+`sgbm_config.json`), rectifies, matches, and prints the report before writing five artefacts into
+`example_output/` next to the binary: `disparity.png` and `depth.png` in their measurement encodings,
+`disparity_color.png` and `depth_color.png` as viewable thermal ramps, and `cloud.pcd`. The
 scene's own ground truth puts the median disparity at 73.26 px and the median depth at
 0.1129 m, so the program exits non-zero when the result drifts away from that.
 
@@ -191,7 +195,7 @@ the very end, so a `conan create` log finishes with
 [example] result of test_package/main.cpp
 [example] rectified 640x480
 ...
-[example] saved     disparity.png, depth.png, cloud.pcd in example_output
+[example] saved     disparity.png, depth.png (measurement) and disparity_color.png, depth_color.png (colour), plus cloud.pcd in example_output
 ```
 
 instead of with the coverage table. Look for that prefix, or run the binary directly from

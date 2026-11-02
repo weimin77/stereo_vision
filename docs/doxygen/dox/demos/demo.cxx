@@ -58,6 +58,10 @@ int main(int argc, char** argv) {
     // 6. Saving is explicit: png is 16-bit fixed point, tif is 32-bit float, pcd/ply follow the extension.
     pipeline.save_disparity_image("disparity.png");
     pipeline.save_depth_image("depth.png");
+    // A 16-bit or millimetre png reads as a near-black frame in most viewers; colorize=true writes
+    // an 8-bit ramp instead, for looking at rather than for measuring.
+    pipeline.save_disparity_image("disparity_color.png", true);
+    pipeline.save_depth_image("depth_color.png", true);
     pipeline.save_pointcloud("cloud.pcd");
     pipeline.save_pointcloud("cloud.ply");
     return 0;

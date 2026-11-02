@@ -72,6 +72,8 @@ can inspect the result before deciding which files to produce.
 
        pipeline.save_disparity_image("out/disparity.png");    // 16-bit, d * 16
        pipeline.save_depth_image("out/depth.png");            // 16-bit millimetres
+       pipeline.save_disparity_image("out/disparity_color.png", true);   // 8-bit thermal ramp
+       pipeline.save_depth_image("out/depth_color.png", true);           // 8-bit, near is warm
        pipeline.save_pointcloud("out/cloud.ply");             // ascii or binary per config
        return 0;
    }
@@ -79,7 +81,7 @@ can inspect the result before deciding which files to produce.
 _`Applying results`
 -------------------
 
-Four artefacts come out of a run, and each has its own consumer:
+Five artefacts come out of a run, and each has its own consumer:
 
 .. list-table::
    :header-rows: 1
@@ -94,12 +96,23 @@ Four artefacts come out of a run, and each has its own consumer:
    * - Depth map
      - ``float`` m, NaN invalid; png is millimetres
      - Metric measurement, depth gating, near/far clipping
+   * - Colourised disparity / depth
+     - 8-bit BGR png, jpg or bmp; ``colorize = true``
+     - Opening the result in a viewer; the same ramp for both maps, so near is warm in each
    * - Point cloud
      - PCD (``x y z rgb``) or PLY (``x y z`` + RGB)
      - Registration, plane/box fitting, bin picking
    * - Validity mask
      - ``uint8``, 255 usable
      - Excluding border and occluded pixels from downstream statistics
+
+A 16-bit fixed-point or millimetre sample is the right thing to measure and the wrong thing to look at:
+most viewers render it as a near-black frame. ``colorize = true`` writes an 8-bit ``COLORMAP_TURBO``
+image instead, stretched between the 5th and 95th percentile of the valid samples so a handful of
+outliers cannot flatten the whole map, with invalid pixels left black. It is a view, not a
+measurement: the range depends on the data, so read numbers from the plain artefact. The colour
+form needs an 8-bit container, so ``colorize`` with a ``.tif`` target is rejected rather than
+silently writing something else.
 
 The point cloud is expressed in the rectified left camera frame: x right, y down, z forward, in metres.
 Because ``pointcloud.keep_invalid`` defaults to false, the cloud holds only pixels with a valid depth;

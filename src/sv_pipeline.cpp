@@ -259,11 +259,11 @@ const PointCloud& Pipeline::get_pointcloud() const {
     return impl.cloud;
 }
 
-bool Pipeline::save_disparity_image(const std::string& path) const {
+bool Pipeline::save_disparity_image(const std::string& path, bool colorize) const {
     Impl& impl = *impl_;
     impl.require_result();
     std::string error;
-    if (!disparity_save(path, impl.disparity, &error)) {
+    if (!disparity_save(path, impl.disparity, &error, colorize)) {
         impl.error = error;
         return false;
     }
@@ -271,11 +271,11 @@ bool Pipeline::save_disparity_image(const std::string& path) const {
     return true;
 }
 
-bool Pipeline::save_depth_image(const std::string& path) const {
+bool Pipeline::save_depth_image(const std::string& path, bool colorize) const {
     Impl& impl = *impl_;
     impl.require_result();
     std::string error;
-    if (!depth_save(path, impl.depth, &error)) {
+    if (!depth_save(path, impl.depth, &error, colorize)) {
         impl.error = error;
         return false;
     }

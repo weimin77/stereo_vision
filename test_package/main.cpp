@@ -52,16 +52,28 @@ bool save_artifacts(const sv::Pipeline& pipeline, const std::filesystem::path& o
         return false;
     }
 
+    // Two artefacts per map: the plain one carries the measurement, the _color one is what a
+    // viewer can actually show. Both come from the same result, so they cannot disagree.
     const std::filesystem::path disparity = out_dir / "disparity.png";
+    const std::filesystem::path disparity_color = out_dir / "disparity_color.png";
     const std::filesystem::path depth = out_dir / "depth.png";
+    const std::filesystem::path depth_color = out_dir / "depth_color.png";
     const std::filesystem::path cloud = out_dir / "cloud.pcd";
-    if (!pipeline.save_disparity_image(disparity.string()) || !pipeline.save_depth_image(depth.string()) ||
-        !pipeline.save_pointcloud(cloud.string())) {
+
+    const bool saved = pipeline.save_disparity_image(disparity.string()) &&
+                       pipeline.save_depth_image(depth.string()) &&
+                       pipeline.save_disparity_image(disparity_color.string(), true) &&
+                       pipeline.save_depth_image(depth_color.string(), true) &&
+                       pipeline.save_pointcloud(cloud.string());
+    if (!saved) {
         std::cerr << "example: " << pipeline.last_error() << '\n';
         return false;
     }
-    std::cout << "saved     " << disparity.filename().string() << ", " << depth.filename().string() << ", "
-              << cloud.filename().string() << " in " << out_dir.string() << '\n';
+
+    std::cout << "saved     " << disparity.filename().string() << ", " << depth.filename().string()
+              << " (measurement) and " << disparity_color.filename().string() << ", "
+              << depth_color.filename().string() << " (colour), plus " << cloud.filename().string() << " in "
+              << out_dir.string() << '\n';
     return true;
 }
 

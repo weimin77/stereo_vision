@@ -135,21 +135,25 @@ class Pipeline {
      * @brief [en] Write the disparity map; png is 16-bit x16 fixed point, tif is float
      * @brief [zh] 写出视差图；png 为 16 位 x16 定点，tif 为浮点
      * @param path output path / 输出路径
+     * @param colorize write an 8-bit colour map to look at instead of the measurement encoding; a png, jpg
+     * or bmp target, since a colour map cannot carry the float .tif form
      * @return true on success
      * @since 1.0
      * @exporter
      */
-    bool save_disparity_image(const std::string& path) const;
+    bool save_disparity_image(const std::string& path, bool colorize = false) const;
 
     /**
      * @brief [en] Write the depth map; png is 16-bit millimetres, tif is float metres
      * @brief [zh] 写出深度图；png 为 16 位毫米，tif 为浮点米
      * @param path output path / 输出路径
+     * @param colorize write an 8-bit colour map to look at instead of the measurement encoding; near is
+     * the hot end, so it matches the disparity map. A png, jpg or bmp target.
      * @return true on success
      * @since 1.0
      * @exporter
      */
-    bool save_depth_image(const std::string& path) const;
+    bool save_depth_image(const std::string& path, bool colorize = false) const;
 
     /**
      * @brief [en] Write the point cloud as PCD or PLY, chosen by the extension
