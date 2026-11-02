@@ -52,8 +52,8 @@ int main(int argc, char** argv) {
     const sv::DisparityImage& disparity = pipeline.get_disparity_image();
     const sv::DepthImage& depth = pipeline.get_depth_image();
     const sv::PointCloud& cloud = pipeline.get_pointcloud();
-    std::printf("disparity %dx%d, depth %dx%d, cloud %zu points (coloured: %s)\n", disparity.width, disparity.height,
-                depth.width, depth.height, cloud.points.size(), cloud.colored ? "yes" : "no");
+    std::printf("disparity %dx%d, depth %dx%d, cloud %zu points\n", disparity.width, disparity.height, depth.width,
+                depth.height, cloud.points.size());
 
     // 6. Saving is explicit: png is 16-bit fixed point, tif is 32-bit float, pcd/ply follow the extension.
     pipeline.save_disparity_image("disparity.png");

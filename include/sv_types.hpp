@@ -57,8 +57,8 @@ struct DepthImage {
 };
 
 /**
- * @brief [en] Point with optional RGB colour
- * @brief [zh] 带可选 RGB 颜色的点
+ * @brief [en] One back-projected point
+ * @brief [zh] 一个反投影得到的点
  * @since 1.0
  * @exporter
  */
@@ -66,20 +66,21 @@ struct Point {
     float x = 0.0F;
     float y = 0.0F;
     float z = 0.0F;
-    std::uint8_t r = 0;
-    std::uint8_t g = 0;
-    std::uint8_t b = 0;
 };
 
 /**
  * @brief [en] Unorganised point cloud in the rectified left camera frame
  * @brief [zh] 非结构化点云，坐标系为校正后的左相机坐标系
+ *
+ * Geometry only: the cloud carries x, y, z and nothing else, so a PCD or PLY written from it has
+ * three fields. Colour lives in the images the run already produced, and mixing the two would make
+ * the cloud's size depend on whether an RGB pair happened to be available.
+ *
  * @since 1.0
  * @exporter
  */
 struct PointCloud {
     std::vector<Point> points;
-    bool colored = false;
 };
 
 /**

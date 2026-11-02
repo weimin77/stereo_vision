@@ -51,7 +51,6 @@ struct Config {
 
     bool cloud_binary = true;
     bool cloud_keep_invalid = false;
-    bool cloud_color = true;
 
     std::string output_directory;
     std::string output_prefix = "stereo";

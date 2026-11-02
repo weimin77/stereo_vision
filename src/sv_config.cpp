@@ -231,7 +231,6 @@ void apply_pointcloud(const cv::FileNode& node, Config& config) {
         }
     }
     read_bool(node, "keep_invalid", config.cloud_keep_invalid);
-    read_bool(node, "color", config.cloud_color);
 }
 
 void apply_output(const cv::FileNode& node, Config& config) {

@@ -51,7 +51,8 @@ epipolar rectification, SGBM matching, disparity-to-depth conversion and point c
 - `cv::StereoSGBM` wrapper: padding, 1/16 px fixed-point unpacking, search-window clipping and a
   sub-pixel left-right consistency check
 - Depth from `Z = fx·|Tx| / (d − doffs)`, so a principal-point offset no longer skews the cloud
-- Point cloud in the rectified left camera frame; PCD and PLY writers (ascii or binary) without PCL
+- Point cloud in the rectified left camera frame, geometry only (`x y z`, no RGB); PCD and PLY
+  writers (ascii or binary) without PCL
 - Interface contract: images enter through `set_input_image()`, results leave through `get_*` and
   `save_*`; `run()` computes and writes nothing
 - `save_disparity_image()` / `save_depth_image()` take `colorize`: the default keeps the measurement

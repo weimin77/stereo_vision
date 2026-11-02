@@ -12,8 +12,6 @@ namespace sv {
  * @brief [en] Back-project a depth map into the rectified left camera frame
  * @brief [zh] 把深度图反投影到校正后的左相机坐标系
  * @param depth depth map in metres / 深度图，单位米
- * @param color optional BGR or grayscale image used for per-point colour; a grayscale source is
- *        replicated onto r, g and b. Ignored when empty.
  * @param geometry rectified geometry / 校正后的几何参数
  * @param keep_invalid keep one entry per pixel, marking invalid depth as NaN
  * @param cloud receives the points / 接收点云
@@ -22,9 +20,8 @@ namespace sv {
  * @since 1.0
  * @exporter
  */
-bool pointcloud_from_depth(const DepthImage& depth, const Image& color, const RectifyGeometry& geometry,
-                           bool keep_invalid, PointCloud& cloud,
-                           std::string* error); // NOLINT(bugprone-easily-swappable-parameters)
+bool pointcloud_from_depth(const DepthImage& depth, const RectifyGeometry& geometry, bool keep_invalid,
+                           PointCloud& cloud, std::string* error);
 
 /**
  * @brief [en] Write a point cloud as PCD, choosing ascii or binary from the encoding flag

@@ -250,7 +250,7 @@ const PointCloud& Pipeline::get_pointcloud() const {
     if (impl.cloud_dirty) {
         std::string error;
         PointCloud cloud;
-        if (!pointcloud_from_depth(impl.depth, impl.rectified.left, impl.rectifier.geometry(), false, cloud, &error)) {
+        if (!pointcloud_from_depth(impl.depth, impl.rectifier.geometry(), false, cloud, &error)) {
             throw std::logic_error("point cloud build failed: " + error);
         }
         impl.cloud = std::move(cloud);
@@ -288,14 +288,9 @@ bool Pipeline::save_pointcloud(const std::string& path) const {
     impl.require_result();
     std::string error;
     PointCloud cloud;
-    if (!pointcloud_from_depth(impl.depth, impl.rectified.left, impl.rectifier.geometry(),
-                               impl.config.cloud_keep_invalid, cloud, &error)) {
+    if (!pointcloud_from_depth(impl.depth, impl.rectifier.geometry(), impl.config.cloud_keep_invalid, cloud, &error)) {
         impl.error = error;
         return false;
-    }
-    const bool colored = impl.config.cloud_color;
-    if (!colored) {
-        cloud.colored = false;
     }
     if (!pointcloud_save(path, cloud, impl.config.cloud_binary, &error)) {
         impl.error = error;

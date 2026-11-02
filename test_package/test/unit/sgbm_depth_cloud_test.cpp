@@ -172,7 +172,7 @@ TEST(PointCloud, BackProjectsDepthWithThePinholeModel) {
 
     sv::PointCloud cloud;
     std::string error;
-    ASSERT_TRUE(sv::pointcloud_from_depth(depth, {}, geometry, false, cloud, &error)) << error;
+    ASSERT_TRUE(sv::pointcloud_from_depth(depth, geometry, false, cloud, &error)) << error;
     ASSERT_EQ(cloud.points.size(), depth.data.size());
 
     const std::size_t index = 5;  // x = 1, y = 1
@@ -181,7 +181,6 @@ TEST(PointCloud, BackProjectsDepthWithThePinholeModel) {
     EXPECT_NEAR(cloud.points[index].x, expected_x, kCoordinateTolerance);
     EXPECT_NEAR(cloud.points[index].y, expected_y, kCoordinateTolerance);
     EXPECT_NEAR(cloud.points[index].z, 2.0, kCoordinateTolerance);
-    EXPECT_FALSE(cloud.colored);
 }
 
 TEST(PointCloud, KeepInvalidProducesOneEntryPerPixel) {
@@ -194,34 +193,29 @@ TEST(PointCloud, KeepInvalidProducesOneEntryPerPixel) {
     sv::PointCloud valid_only;
     sv::PointCloud kept;
     std::string error;
-    ASSERT_TRUE(sv::pointcloud_from_depth(depth, {}, geometry, false, valid_only, &error)) << error;
-    ASSERT_TRUE(sv::pointcloud_from_depth(depth, {}, geometry, true, kept, &error)) << error;
+    ASSERT_TRUE(sv::pointcloud_from_depth(depth, geometry, false, valid_only, &error)) << error;
+    ASSERT_TRUE(sv::pointcloud_from_depth(depth, geometry, true, kept, &error)) << error;
     EXPECT_EQ(valid_only.points.size(), 1U);
     EXPECT_EQ(kept.points.size(), 2U);
     EXPECT_FALSE(std::isfinite(kept.points[1].z));
 }
 
-TEST(PointCloud, ColourIsTakenFromTheImage) {
+TEST(PointCloud, CloudCarriesGeometryOnly) {
+    // The cloud has three fields per point. A test that only counts them would still pass if a
+    // fourth were appended, so the size of Point itself is the assertion.
+    EXPECT_EQ(sizeof(sv::Point), 3U * sizeof(float));
+
     const sv::RectifyGeometry geometry = identity_geometry(2, 1);
     sv::DepthImage depth;
     depth.width = 2;
     depth.height = 1;
     depth.data = {2.0F, 2.0F};
 
-    sv::Image color;
-    color.width = 2;
-    color.height = 1;
-    color.channels = 3;
-    color.data = {10, 20, 30, 40, 50, 60};
-
     sv::PointCloud cloud;
     std::string error;
-    ASSERT_TRUE(sv::pointcloud_from_depth(depth, color, geometry, false, cloud, &error)) << error;
+    ASSERT_TRUE(sv::pointcloud_from_depth(depth, geometry, false, cloud, &error)) << error;
     ASSERT_EQ(cloud.points.size(), 2U);
-    EXPECT_TRUE(cloud.colored);
-    EXPECT_EQ(cloud.points[0].b, 10);
-    EXPECT_EQ(cloud.points[0].g, 20);
-    EXPECT_EQ(cloud.points[0].r, 30);
+    EXPECT_NEAR(cloud.points[1].z, 2.0, kCoordinateTolerance);
 }
 
 TEST(PointCloud, PcdAsciiHeaderAndCount) {
@@ -253,9 +247,23 @@ TEST(PointCloud, PcdAsciiHeaderAndCount) {
             in_data = true;
             continue;
         }
-        if (in_data) {
-            ++data_lines;
+        if (!in_data) {
+            continue;
         }
+        ++data_lines;
+        // Three columns: a fourth would be the rgb field this writer no longer emits. Split on
+        // spaces rather than stream into doubles, because "nan" is a valid column and a numeric
+        // stream rejects it.
+        std::size_t columns = 0;
+        bool in_token = false;
+        for (const char c : line) {
+            const bool separator = c == ' ';
+            if (!separator && !in_token) {
+                ++columns;
+            }
+            in_token = !separator;
+        }
+        EXPECT_EQ(columns, 3U) << "row " << data_lines << " is '" << line << "'";
     }
     EXPECT_TRUE(saw_points);
     EXPECT_TRUE(saw_ascii);
@@ -288,17 +296,15 @@ TEST(PointCloud, PcdBinarySizeMatchesThePointCount) {
         }
     }
     EXPECT_TRUE(saw_binary);
-    constexpr std::size_t kBytesPerPoint = 4U * sizeof(float);
+    constexpr std::size_t kBytesPerPoint = 3U * sizeof(float);
     EXPECT_EQ(fs::file_size(path), header_bytes + (3U * kBytesPerPoint));
     fs::remove(path);
 }
 
-TEST(PointCloud, PlyHeaderDeclaresTheColourProperties) {
+TEST(PointCloud, PlyHeaderDeclaresExactlyThreeProperties) {
     sv::PointCloud cloud;
-    cloud.colored = true;
     cloud.points.resize(1);
     cloud.points[0].x = 1.0F;
-    cloud.points[0].r = 200;
 
     const fs::path path = temporary_path("cloud_ascii.ply");
     std::string error;
@@ -308,16 +314,54 @@ TEST(PointCloud, PlyHeaderDeclaresTheColourProperties) {
     ASSERT_TRUE(input.good());
     std::string line;
     bool saw_format = false;
-    bool saw_red = false;
     bool saw_vertex_count = false;
+    bool saw_colour = false;
+    std::vector<std::string> properties;
     while (std::getline(input, line)) {
         saw_format = saw_format || line == "format ascii 1.0";
-        saw_red = saw_red || line == "property uchar red";
         saw_vertex_count = saw_vertex_count || line == "element vertex 1";
+        if (line.rfind("property ", 0) == 0) {
+            properties.push_back(line);
+            saw_colour = saw_colour || line == "property uchar red" || line == "property uchar green" ||
+                         line == "property uchar blue";
+        }
     }
     EXPECT_TRUE(saw_format);
-    EXPECT_TRUE(saw_red);
     EXPECT_TRUE(saw_vertex_count);
+    EXPECT_FALSE(saw_colour) << "the cloud is geometry only, so no colour property may be declared";
+    ASSERT_EQ(properties.size(), 3U);
+    EXPECT_EQ(properties[0], "property float x");
+    EXPECT_EQ(properties[1], "property float y");
+    EXPECT_EQ(properties[2], "property float z");
+    fs::remove(path);
+}
+
+TEST(PointCloud, PcdHeaderDeclaresExactlyThreeFields) {
+    sv::PointCloud cloud;
+    cloud.points.resize(1);
+    cloud.points[0].z = 1.0F;
+
+    const fs::path path = temporary_path("cloud_fields.pcd");
+    std::string error;
+    ASSERT_TRUE(sv::pointcloud_save_pcd(path.string(), cloud, false, &error)) << error;
+
+    std::ifstream input(path);
+    ASSERT_TRUE(input.good());
+    std::string line;
+    bool saw_fields = false;
+    bool saw_size = false;
+    bool saw_type = false;
+    bool saw_count = false;
+    while (std::getline(input, line)) {
+        saw_fields = saw_fields || line == "FIELDS x y z";
+        saw_size = saw_size || line == "SIZE 4 4 4";
+        saw_type = saw_type || line == "TYPE F F F";
+        saw_count = saw_count || line == "COUNT 1 1 1";
+    }
+    EXPECT_TRUE(saw_fields) << "a fourth field would break the offset every PCD reader uses";
+    EXPECT_TRUE(saw_size);
+    EXPECT_TRUE(saw_type);
+    EXPECT_TRUE(saw_count);
     fs::remove(path);
 }
 

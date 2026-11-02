@@ -122,19 +122,15 @@ PYBIND11_MODULE(stereo_vision_python, m) {
         .def_readwrite("data", &sv::DepthImage::data)
         .def("valid", &sv::depth_valid);
 
-    py::class_<sv::Point>(m, "Point", "Point with optional RGB")
+    py::class_<sv::Point>(m, "Point", "One back-projected point")
         .def(py::init<>())
         .def_readwrite("x", &sv::Point::x)
         .def_readwrite("y", &sv::Point::y)
-        .def_readwrite("z", &sv::Point::z)
-        .def_readwrite("r", &sv::Point::r)
-        .def_readwrite("g", &sv::Point::g)
-        .def_readwrite("b", &sv::Point::b);
+        .def_readwrite("z", &sv::Point::z);
 
     py::class_<sv::PointCloud>(m, "PointCloud", "Points in the rectified left camera frame")
         .def(py::init<>())
-        .def_readwrite("points", &sv::PointCloud::points)
-        .def_readwrite("colored", &sv::PointCloud::colored);
+        .def_readwrite("points", &sv::PointCloud::points);
 
     py::class_<sv::RectifyGeometry>(m, "RectifyGeometry", "Geometry of the rectified views")
         .def(py::init<>())
@@ -212,7 +208,6 @@ PYBIND11_MODULE(stereo_vision_python, m) {
         .def_readwrite("depth_max_m", &sv::Config::depth_max_m)
         .def_readwrite("cloud_binary", &sv::Config::cloud_binary)
         .def_readwrite("cloud_keep_invalid", &sv::Config::cloud_keep_invalid)
-        .def_readwrite("cloud_color", &sv::Config::cloud_color)
         .def_readwrite("output_directory", &sv::Config::output_directory)
         .def_readwrite("output_prefix", &sv::Config::output_prefix)
         .def_readwrite("warnings", &sv::Config::warnings);

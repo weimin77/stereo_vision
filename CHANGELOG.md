@@ -15,7 +15,7 @@ the entries below are the initial state before the first automated release.
 - Depth from `Z = fx * |Tx| / (d - doffs)`, honouring the principal-point offset between the
   rectified views
 - Point cloud back-projection in the rectified left camera frame, written as PCD or PLY (ascii or
-  binary) without a PCL dependency
+  binary) without a PCL dependency; each point is `x y z` only, with no per-point colour
 - `colorize` on the two map writers: the default keeps the measurement encoding, `true` writes an
   8-bit `COLORMAP_TURBO` view stretched over the 5th-95th percentile, invalid pixels black, near warm
 - `sv::Pipeline` facade: `set_input_image`, `run` (compute only), `get_*` and `save_*`

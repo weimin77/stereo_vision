@@ -20,11 +20,6 @@ namespace {
 namespace fs = std::filesystem;
 
 constexpr double kZero = 0.0;
-constexpr int kChannelsGray = 1;
-constexpr int kChannelsColor = 3;
-constexpr int kByteCount = 4;
-constexpr int kRgbRedShift = 16;
-constexpr int kRgbGreenShift = 8;
 constexpr float kInvalidFloat = std::numeric_limits<float>::quiet_NaN();
 
 void set_error(std::string* error, const std::string& message) {
@@ -53,31 +48,16 @@ bool check_target(const std::string& path, std::string* error) {
     return true;
 }
 
-/// A cloud entry counts as real when its coordinates are finite and non-zero depth.
+/// A cloud entry counts as real when its coordinates are finite.
 bool point_finite(const Point& point) {
     return std::isfinite(point.x) && std::isfinite(point.y) && std::isfinite(point.z);
-}
-
-/// PCD stores the colour as the bit pattern of a float, so ascii and binary agree.
-float pack_rgb(const Point& point) {
-    const std::uint32_t packed = (static_cast<std::uint32_t>(point.r) << kRgbRedShift) |
-                                 (static_cast<std::uint32_t>(point.g) << kRgbGreenShift) |
-                                 static_cast<std::uint32_t>(point.b);
-    float value = 0.0F;
-    std::memcpy(&value, &packed, sizeof(value));
-    return value;
-}
-
-std::uint32_t pack_rgb_bits(const Point& point) {
-    return (static_cast<std::uint32_t>(point.r) << kRgbRedShift) |
-           (static_cast<std::uint32_t>(point.g) << kRgbGreenShift) | static_cast<std::uint32_t>(point.b);
 }
 
 } // namespace
 
 
-bool pointcloud_from_depth(const DepthImage& depth, const Image& color, const RectifyGeometry& geometry,
-                           bool keep_invalid, PointCloud& cloud, std::string* error) { // NOLINT
+bool pointcloud_from_depth(const DepthImage& depth, const RectifyGeometry& geometry, bool keep_invalid,
+                           PointCloud& cloud, std::string* error) {
     if (!depth_valid(depth)) {
         set_error(error, "depth map is empty or inconsistent");
         return false;
@@ -86,34 +66,12 @@ bool pointcloud_from_depth(const DepthImage& depth, const Image& color, const Re
         set_error(error, "geometry has a non-positive focal length");
         return false;
     }
-    if (!color.data.empty()) {
-        if (!image_valid(color)) {
-            set_error(error, "colour image is empty or inconsistent");
-            return false;
-        }
-        if (color.width != depth.width || color.height != depth.height) {
-            set_error(error, "colour image must match the depth map size");
-            return false;
-        }
-        if (color.channels != kChannelsColor && color.channels != kChannelsGray) {
-            set_error(error, "colour image must have 1 or 3 channels");
-            return false;
-        }
-    }
 
-    // A grayscale source is replicated onto r/g/b: the cloud is still "colored", just grey,
-    // so one reader path handles both cases.
-    const bool colored = !color.data.empty();
-    const int color_step = colored ? color.channels : 0;
-    cloud.colored = colored;
     cloud.points.clear();
     cloud.points.reserve(keep_invalid ? depth.data.size() : depth.data.size() / 2);
 
     for (int y = 0; y < depth.height; ++y) {
         const auto* depth_row = &depth.data[static_cast<std::size_t>(y) * depth.width];
-        const std::uint8_t* color_row =
-            colored ? &color.data[static_cast<std::size_t>(y) * depth.width * static_cast<std::size_t>(color_step)]
-                    : nullptr;
         for (int x = 0; x < depth.width; ++x) {
             const float z = depth_row[x];
             const bool usable = std::isfinite(z) && z > kZero;
@@ -129,19 +87,6 @@ bool pointcloud_from_depth(const DepthImage& depth, const Image& color, const Re
                 point.x = kInvalidFloat;
                 point.y = kInvalidFloat;
                 point.z = kInvalidFloat;
-            }
-            if (colored) {
-                const std::uint8_t* pixel =
-                    color_row + (static_cast<std::size_t>(x) * static_cast<std::size_t>(color_step));
-                if (color_step == kChannelsColor) {
-                    point.b = pixel[0];
-                    point.g = pixel[1];
-                    point.r = pixel[2];
-                } else {
-                    point.b = pixel[0];
-                    point.g = pixel[0];
-                    point.r = pixel[0];
-                }
             }
             cloud.points.push_back(point);
         }
@@ -171,10 +116,10 @@ bool pointcloud_save_pcd(const std::string& path, const PointCloud& cloud, bool 
     const std::size_t count = cloud.points.size();
     out << "# .PCD v0.7 - Point Cloud Data file format\n"
         << "VERSION 0.7\n"
-        << "FIELDS x y z rgb\n"
-        << "SIZE 4 4 4 4\n"
-        << "TYPE F F F F\n"
-        << "COUNT 1 1 1 1\n"
+        << "FIELDS x y z\n"
+        << "SIZE 4 4 4\n"
+        << "TYPE F F F\n"
+        << "COUNT 1 1 1\n"
         << "WIDTH " << count << '\n'
         << "HEIGHT 1\n"
         << "VIEWPOINT 0 0 0 1 0 0 0\n"
@@ -183,10 +128,7 @@ bool pointcloud_save_pcd(const std::string& path, const PointCloud& cloud, bool 
 
     if (binary) {
         for (const Point& point : cloud.points) {
-            const std::uint32_t rgb = pack_rgb_bits(point);
-            float packed = 0.0F;
-            std::memcpy(&packed, &rgb, sizeof(packed));
-            const float values[kByteCount] = {point.x, point.y, point.z, packed};
+            const float values[3] = {point.x, point.y, point.z};
             out.write(reinterpret_cast<const char*>(values), sizeof(values));
         }
     } else {
@@ -194,10 +136,9 @@ bool pointcloud_save_pcd(const std::string& path, const PointCloud& cloud, bool 
         out.precision(6);
         for (const Point& point : cloud.points) {
             if (point_finite(point)) {
-                out << point.x << ' ' << point.y << ' ' << point.z << ' ' << static_cast<double>(pack_rgb(point))
-                    << '\n';
+                out << point.x << ' ' << point.y << ' ' << point.z << '\n';
             } else {
-                out << "nan nan nan 0\n";
+                out << "nan nan nan\n";
             }
         }
     }
@@ -244,22 +185,13 @@ bool pointcloud_save_ply(const std::string& path, const PointCloud& cloud, bool 
         << "element vertex " << count << '\n'
         << "property float x\n"
         << "property float y\n"
-        << "property float z\n";
-    if (cloud.colored) {
-        out << "property uchar red\n"
-            << "property uchar green\n"
-            << "property uchar blue\n";
-    }
-    out << "end_header\n";
+        << "property float z\n"
+        << "end_header\n";
 
     if (binary) {
         for (const Point& point : cloud.points) {
             const float xyz[3] = {point.x, point.y, point.z};
             out.write(reinterpret_cast<const char*>(xyz), sizeof(xyz));
-            if (cloud.colored) {
-                const std::uint8_t rgb[3] = {point.r, point.g, point.b};
-                out.write(reinterpret_cast<const char*>(rgb), sizeof(rgb));
-            }
         }
     } else {
         out.setf(std::ios::fixed, std::ios::floatfield);
@@ -269,10 +201,6 @@ bool pointcloud_save_ply(const std::string& path, const PointCloud& cloud, bool 
                 out << point.x << ' ' << point.y << ' ' << point.z;
             } else {
                 out << "nan nan nan";
-            }
-            if (cloud.colored) {
-                out << ' ' << static_cast<int>(point.r) << ' ' << static_cast<int>(point.g) << ' '
-                    << static_cast<int>(point.b);
             }
             out << '\n';
         }

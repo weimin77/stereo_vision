@@ -61,7 +61,7 @@
 
   "depth": {"min_m": 0.0, "max_m": 0.0},
 
-  "pointcloud": {"encoding": "binary", "keep_invalid": false, "color": true},
+  "pointcloud": {"encoding": "binary", "keep_invalid": false},
 
   "output": {
     "directory": "",

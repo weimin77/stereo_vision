@@ -100,7 +100,7 @@ Five artefacts come out of a run, and each has its own consumer:
      - 8-bit BGR png, jpg or bmp; ``colorize = true``
      - Opening the result in a viewer; the same ramp for both maps, so near is warm in each
    * - Point cloud
-     - PCD (``x y z rgb``) or PLY (``x y z`` + RGB)
+     - PCD or PLY, ``x y z`` only
      - Registration, plane/box fitting, bin picking
    * - Validity mask
      - ``uint8``, 255 usable
@@ -115,9 +115,11 @@ form needs an 8-bit container, so ``colorize`` with a ``.tif`` target is rejecte
 silently writing something else.
 
 The point cloud is expressed in the rectified left camera frame: x right, y down, z forward, in metres.
-Because ``pointcloud.keep_invalid`` defaults to false, the cloud holds only pixels with a valid depth;
-the full pixel grid can be rebuilt from the disparity map plus ``fx``, ``cx``, ``cy``, ``doffs`` and
-``baseline``, all of which the run report records.
+It carries geometry only — three fields per point, no colour — so its size depends on the depth map and
+never on whether the input pair happened to be colour. Because ``pointcloud.keep_invalid`` defaults to
+false, the cloud holds only pixels with a valid depth; the full pixel grid can be rebuilt from the
+disparity map plus ``fx``, ``cx``, ``cy``, ``doffs`` and ``baseline``, all of which the run report
+records.
 
 _`Algorithm benchmark from test frame`
 --------------------------------------
