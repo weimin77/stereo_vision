@@ -189,38 +189,52 @@ class PackageTestConan(ConanFile):
         if self._is_llvm_coverage():
             self._prepare_llvm_profile_env()
 
-        # scripting in test_package/main.cpp
+        # The example runs before the suite, because the program's own gcda files have to exist by
+        # the time coverage is collected. Its output is replayed at the very end instead, so the
+        # last thing in the log is what the pipeline computed rather than the coverage table.
+        example = None
+        example_error = None
         if can_run(self):
-            self._run_example()
+            try:
+                example = self._run_example()
+            except Exception as err:  # noqa: BLE001 -- re-raised below, once its output exists
+                example_error = err
 
         # test cases in test_pacakge/test/*.cpp
-        if self._tests_enabled():
+        suite_error = None
+        coverage_error = None
+        if example_error is None and (example is None or example.returncode == 0) and self._tests_enabled():
             # The report is written before a red suite is raised, never instead of raising it.
-            suite_error = None
             try:
                 self._run_ctest_suite()
             except Exception as err:  # noqa: BLE001 -- re-raised below, once the report exists
                 suite_error = err
 
-            coverage_error = None
             if self.metadata.get('activate_code_coverage'):
                 try:
                     self._code_coverage_auto()
                 except Exception as err:  # noqa: BLE001 -- reported, but after the suite's own verdict
                     coverage_error = err
 
-            # The suite's failure is the verdict; raising the coverage error instead would hide which case failed.
-            if suite_error is not None:
-                raise suite_error from coverage_error
-            if coverage_error is not None:
-                raise coverage_error
+        if example is not None:
+            self._report_example(example)
+
+        # A red example is the verdict when it ran, then the suite's, then coverage's: the suite's
+        # failure is more specific than a coverage floor, and coverage is a consequence of either.
+        if example_error is not None:
+            raise example_error
+        if example is not None and example.returncode != 0:
+            raise ConanException(f'test_package/main.cpp exited with code {example.returncode}')
+        if suite_error is not None:
+            raise suite_error from coverage_error
+        if coverage_error is not None:
+            raise coverage_error
 
     def _run_example(self):
-        """Run test_package/main.cpp with an output a reader can actually find.
+        """Run test_package/main.cpp and return the completed process.
 
-        A plain `self.run()` lets the program's seven result lines land between the build log and
-        ctest, carry no prefix, and read as more compiler noise. Capturing them here gives them a
-        header, a copy in test/export/ExampleResult.log, and a shape CI logs can grep.
+        The output is captured rather than streamed: it is echoed by _report_example() at the end
+        of test(), and archived to test/export/ExampleResult.log either way.
         """
         cmd = os.path.join(self.cpp.build.bindirs[0], 'main')
         self.output.highlight('[example] running test_package/main.cpp')
@@ -231,15 +245,16 @@ class PackageTestConan(ConanFile):
         with env.apply():
             proc = subprocess.run([cmd], cwd=self.build_folder, capture_output=True, text=True, check=False)
 
+        self._archive_example_output(proc.stdout, proc.stderr, proc.returncode)
+        return proc
+
+    def _report_example(self, proc):
+        """Echo the captured run last: a log should end with the result, not the coverage table."""
+        self.output.highlight('[example] result of test_package/main.cpp')
         for line in proc.stdout.splitlines():
             self.output.info(f'[example] {line}')
         for line in proc.stderr.splitlines():
             self.output.warning(f'[example] {line}')
-
-        self._archive_example_output(proc.stdout, proc.stderr, proc.returncode)
-
-        if proc.returncode != 0:
-            raise ConanException(f'test_package/main.cpp exited with code {proc.returncode}')
 
     def _archive_example_output(self, stdout, stderr, returncode):
         """`<recipe>/test/export/ExampleResult.log`, so the example's verdict outlives the terminal.
