@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fcpp 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 16:00+0800\n"
+"POT-Creation-Date: 2026-11-02 13:31+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_CN\n"
@@ -35,16 +35,16 @@ msgstr "元数据"
 msgid "User concern contents"
 msgstr "用户关注内容"
 
-#: ../../source/index.rst:2 1e4760ca98b449d9ad905c464d8283a9
+#: ../../source/index.rst:2 42949aee36034cf7979f479ef769dcb6
 #, fuzzy
 msgid "_`stereo_vision Documentation`"
 msgstr "fcpp 项目文档"
 
-#: ../../source/index.rst:5 16ef412fdc2448deba162c63169d74a3
+#: ../../source/index.rst:5 a04a98f7a20a468fbd153c363174f6c0
 msgid "_`Introduction`"
 msgstr "简介"
 
-#: ../../source/index.rst:7 fe3c48d289ed4021a799274cb8bd0b91
+#: ../../source/index.rst:7 5ca80c2d817b47f3b710ba3812354129
 msgid ""
 "stereo_vision turns a calibrated stereo pair into a disparity map, a "
 "depth map and a point cloud: epipolar rectification, SGBM matching, "
@@ -52,58 +52,58 @@ msgid ""
 " build system as the fcpp template (Conan 2, CMake, Doxygen + Sphinx)."
 msgstr ""
 
-#: ../../source/index.rst:12 08d87adbf7f24d21a48ebfc9fe4357f2
+#: ../../source/index.rst:12 24875167d45441619b0c7f5b0fd17d4b
 msgid "_`Main Features`"
 msgstr "主要特性"
 
-#: ../../source/index.rst:14 12311d5662b046619614f98e9dc49bed
+#: ../../source/index.rst:14 0d837abc4e3047cbb1cc4a6b565a9847
 msgid "Rectification with common-ROI cropping, rebased Q/P and a validity mask"
 msgstr ""
 
-#: ../../source/index.rst:15 788c64e5704d460898b96255937b09ec
+#: ../../source/index.rst:15 e2756dc6ed314e74ab18ef59061937fd
 msgid ""
-"cv::StereoSGBM wrapper with padding and 1/16 px unpacking, one left-to-"
-"right pass"
+"cv::StereoSGBM wrapper with padding, 1/16 px unpacking and a left-right "
+"check"
 msgstr ""
 
-#: ../../source/index.rst:16 1399da04874f4f7fafab4f26c3b02504
+#: ../../source/index.rst:16 39450ac3b5cf42269437c6a60c06273e
 msgid ""
 "Depth from the rectified geometry, then a point cloud in the left camera "
 "frame"
 msgstr ""
 
-#: ../../source/index.rst:17 254b70b3bed849b9b30130b40a0a7825
+#: ../../source/index.rst:17 0cd5bdec915e436e9008c63bbb1945aa
 msgid "PCD and PLY output without a PCL dependency"
 msgstr ""
 
-#: ../../source/index.rst:18 ccd6e67c6e8d49b38d0694c65fd90049
+#: ../../source/index.rst:18 67f338cee51746d4a5db4afa0e1967d1
 #, fuzzy
 msgid "Conan-based dependency management, cross-platform build support"
 msgstr "基于 Conan 的依赖管理"
 
-#: ../../source/index.rst:21 94ec93aa7e0c4dfab474aac6e319e220
+#: ../../source/index.rst:21 d3c6b6df2798420bad0d7dac22e96e92
 msgid "_`Quick Start`"
 msgstr "快速开始"
 
-#: ../../source/index.rst:35 de2f8ef771b6486cb3a77a2d0ce1c882
+#: ../../source/index.rst:35 e758931e3a664525bc5070e8875c86eb
 msgid "_`Project Structure`"
 msgstr "项目结构"
 
-#: ../../source/index.rst:50 faead268a8dd4bc9842ce3619fe20d73
+#: ../../source/index.rst:50 78f532a158c0450f90d0a64011d1c02b
 msgid "_`Detailed Settings`"
 msgstr "详细设置"
 
-#: ../../source/index.rst:52 f2a63527168e4b248468a9cb3f9aaceb
+#: ../../source/index.rst:52 1d93152b0924460bb9f05e0cd238d325
 msgid ""
 "For detailed settings in project-level meta, conan recipe, or cmake file,"
 " see:"
 msgstr "有关项目级元数据、Conan 配方或 CMake 文件中的详细设置，请参阅："
 
-#: ../../source/index.rst:63 a8367beed1eb4aaeabef34c217f19156
+#: ../../source/index.rst:63 5605f7d5b5934704ac9c8dd7704e38ce
 msgid "_`License`"
 msgstr "许可证"
 
-#: ../../source/index.rst:65 cdd36a19545049e3b89a7c0cb67b0ee2
+#: ../../source/index.rst:65 79adc48a7f494b4ba55d9c6eeba27ddd
 msgid ""
 "This project is licensed under the Apache-2.0 License. See the LICENSE "
 "file for details."
@@ -141,11 +141,5 @@ msgstr "本项目采用 Apache-2.0 许可证授权。详情请参阅 LICENSE 文
 #~ msgstr "头文件与模块的智能转换"
 
 #~ msgid "Stereo pipeline"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "cv::StereoSGBM wrapper with padding, 1/16 "
-#~ "px unpacking and a left-right "
-#~ "check"
 #~ msgstr ""
 

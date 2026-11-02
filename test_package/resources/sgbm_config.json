@@ -49,6 +49,8 @@
   "clahe_clip_limit": 2.0,
   "clahe_tile_grid": 8,
 
+  "lr_max_diff_px": 1.5,
+
   "depth": {"min_m": 0.0, "max_m": 0.0},
 
   "pointcloud": {"encoding": "binary", "keep_invalid": false},

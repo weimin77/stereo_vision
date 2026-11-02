@@ -41,7 +41,6 @@ struct SgbmParams {
     int p2_factor = 256;
     int pre_filter_cap = 31;
     int uniqueness_ratio = 5;
-    /// Handed to cv::StereoSGBM, where only MODE_HH and MODE_HH4 use it for their internal check.
     int disp12_max_diff = 1;
     int speckle_window_size = 40;
     int speckle_range = 1;
@@ -51,6 +50,8 @@ struct SgbmParams {
     bool clahe = false;
     double clahe_clip_limit = 2.0;
     int clahe_tile_grid = 8;
+    /// Left-right consistency tolerance in pixels.
+    double lr_max_diff_px = 1.5;
 };
 
 /**
@@ -65,15 +66,11 @@ struct SgbmParams {
 bool sgbm_validate(const SgbmParams& params, std::string* error);
 
 /**
- * @brief [en] Compute a disparity map with cv::StereoSGBM in a single left-to-right pass
- * @brief [zh] 用 cv::StereoSGBM 单次左到右计算视差图
+ * @brief [en] Compute a disparity map with cv::StereoSGBM and check it left-to-right
+ * @brief [zh] 用 cv::StereoSGBM 计算视差图并做左右一致性检查
  *
- * The result is in pixels, at sub-pixel precision, with NaN marking pixels that fell outside
- * the search window, landed outside the right image, were masked out, or carry the matcher's
- * invalid sentinel.
- *
- * The matcher runs once. A right-to-left pass would allow a left-right consistency check, but
- * it doubles the cost of this stage, so the caller gets the raw left estimate instead.
+ * The result is in pixels, at sub-pixel precision, with NaN marking pixels that failed
+ * the validity range, the validity mask or the left-right consistency test.
  *
  * @param left left image, 1 or 3 channels / 左图，1 或 3 通道
  * @param right right image of the same size / 同尺寸右图

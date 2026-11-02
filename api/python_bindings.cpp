@@ -183,8 +183,7 @@ PYBIND11_MODULE(stereo_vision_python, m) {
         .def_readwrite("mode", &sv::SgbmParams::mode)
         .def_readwrite("padding", &sv::SgbmParams::padding)
         .def_readwrite("clahe", &sv::SgbmParams::clahe)
-        .def_readwrite("clahe_clip_limit", &sv::SgbmParams::clahe_clip_limit)
-        .def_readwrite("clahe_tile_grid", &sv::SgbmParams::clahe_tile_grid);
+        .def_readwrite("lr_max_diff_px", &sv::SgbmParams::lr_max_diff_px);
 
     py::class_<sv::RectifyOptions>(m, "RectifyOptions", "Rectification options")
         .def(py::init<>())

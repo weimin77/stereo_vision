@@ -121,6 +121,37 @@ false, the cloud holds only pixels with a valid depth; the full pixel grid can b
 disparity map plus ``fx``, ``cx``, ``cy``, ``doffs`` and ``baseline``, all of which the run report
 records.
 
+_`Why the matcher runs twice`
+-----------------------------
+
+``sgbm_compute()`` searches left-to-right and then right-to-left, and keeps a left pixel only when the
+two estimates agree within ``lr_max_diff_px`` (default 1.5 px). The second search costs as much as the
+first — the match stage is twice what a single pass would be — and it buys the only honest test for
+occlusion: a surface the left camera sees and the right camera does not has no partner, so its left
+estimate is a guess about a region the right image cannot confirm.
+
+Dropping the check is tempting because it raises the number of valid pixels, and because the median
+disparity moves *towards* the ground truth when it goes. The median is the wrong statistic here. On a
+640x480 render of the same rig, against that render's own ground-truth disparity map:
+
+.. table:: effect of the left-right consistency check
+   :align: center
+
+   ========================= ================= =================
+   metric                    with the check    single pass
+   ========================= ================= =================
+   pixels kept               147707            181029
+   median error              0.298 px          0.375 px
+   error beyond 2 px         10.6 %            19.7 %
+   error beyond 5 px         8.2 %             15.4 %
+   90th percentile error     2.44 px           11.19 px
+   ========================= ================= =================
+
+The 33322 pixels the check removes are not a random sample: their median error is 4.47 px, 60 % of them
+are more than 2 px off and 47 % more than 5 px. The improvement is therefore in the tail a viewer
+notices — floating shelves in mid-air, streaks across a smooth surface — while the median, dominated by
+the pixels both variants get right, barely moves.
+
 _`Algorithm benchmark from test frame`
 --------------------------------------
 
@@ -136,15 +167,15 @@ shared machine move by tens of percent, the agreement columns do not:
    ================ =========== ==========================================
    phase            time        result
    ================ =========== ==========================================
-   load             14.4 ms     config, calibration and both images
-   run              197.8 ms    of which rectify 4.8 + match 94.6 + depth 2.6
-   write            143.5 ms    five artefacts, ``cloud.pcd`` is 2.9 MB
-   total            355.7 ms    peak resident 34.1 MB
+   load             15.1 ms     config, calibration and both images
+   run              192.4 ms    of which rectify 5.1 + match 178.0 + depth 0.4
+   write            38.9 ms     five artefacts, ``cloud.pcd`` is 2.7 MB
+   total            246.5 ms    peak resident 33.7 MB
    ---------------- ----------- ------------------------------------------
-   coverage         —           ``77.6 %`` of pixels valid
-   disparity p50    —           ``74.19 px`` against ``73.26 px`` in the ground truth
-   depth p50        —           ``0.1132 m`` against ``0.1129 m`` in the ground truth
-   point cloud      —           ``238332`` points
+   coverage         —           ``72.4 %`` of pixels valid
+   disparity p50    —           ``74.13 px`` against ``73.26 px`` in the ground truth
+   depth p50        —           ``0.1133 m`` against ``0.1129 m`` in the ground truth
+   point cloud      —           ``222404`` points
    ================ =========== ==========================================
 
 ``run`` is larger than the sum of its three stages because the stage timers stop at the conversion to
@@ -153,9 +184,8 @@ depth; the validity histogram and the six percentiles over the disparity and dep
 
 The search mode is the one parameter that changes memory by an order of magnitude, because the
 eight-direction sweep (``MODE_HH``) keeps a full ``width x height x numDisparities`` cost volume while
-the others keep a single row. ``minimal`` is the cheapest in memory, not the fastest: ``fast`` holds
-the same memory and runs nearly four times sooner, and it is slightly more accurate too. Choose
-``minimal`` when the target cannot afford the 3-way sweep's working set, not for speed.
+the others keep a single row. ``minimal`` is the cheapest in memory, not the fastest: ``fast`` gives
+up 4 MB to run 3.7 times sooner, and finds 2.4 percentage points more valid pixels along the way.
 
 .. table:: search mode trade-off on the same pair
    :name: mode trade-off
@@ -164,9 +194,9 @@ the same memory and runs nearly four times sooner, and it is slightly more accur
    ============ ========== =========== =============== =========== ============
    profile      mode       peak RSS    match           valid       disparity p50
    ============ ========== =========== =============== =========== ============
-   minimal      ``sgbm``   34.3 MB     92 ms           77.6 %      ``74.19 px``
-   fast         ``3way``   34.2 MB     24 ms           78.9 %      ``74.06 px``
-   balanced     ``hh``     162.1 MB    178 ms          79.0 %      ``74.69 px``
+   minimal      ``sgbm``   33.7 MB     178.0 ms        72.4 %      ``74.13 px``
+   fast         ``3way``   37.8 MB     48.5 ms         74.8 %      ``74.44 px``
+   balanced     ``hh``     162.8 MB    316.5 ms        74.9 %      ``74.94 px``
    ============ ========== =========== =============== =========== ============
 
-Suite level: 65 GTest cases, 81.7 % line coverage.
+Suite level: 65 GTest cases, 82.1 % line coverage.

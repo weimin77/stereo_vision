@@ -20,6 +20,7 @@ constexpr int kFixedPointScale = 16;
 constexpr int kChannelsGray = 1;
 constexpr int kChannelsColor = 3;
 constexpr double kInvalid = std::numeric_limits<double>::quiet_NaN();
+constexpr float kSampleEpsilon = 1e-6F;
 
 void set_error(std::string* error, const std::string& message) {
     if (error != nullptr) {
@@ -75,13 +76,29 @@ inline void unpack(const cv::Mat& fixed, cv::Mat& values, double scale) {
     }
 }
 
-/// A disparity only means something when its right match lands inside the image.
+/// A left value only means something when its right match lands inside the image.
 inline bool correspondence_valid(float value, int x, int width, double low, double high) {
     if (!std::isfinite(value) || value < low || value > high) {
         return false;
     }
     const float destination = static_cast<float>(x) - value;
     return destination >= 0.0F && destination <= static_cast<float>(width - 1);
+}
+
+/// Bilinear sample of the right map at x - d, with the same early-out order as the reference.
+inline bool right_sample(const cv::Mat& right, int x, float value, float& sample) {
+    const int width = right.cols;
+    const float destination = static_cast<float>(x) - value;
+    if (!(destination >= 0.0F && destination <= static_cast<float>(width - 1))) {
+        return false;
+    }
+    const int lower = std::min(std::max(static_cast<int>(std::floor(destination)), 0), width - 1);
+    const int upper = std::min(lower + 1, width - 1);
+    const float weight = destination - static_cast<float>(lower);
+    const float a = right.ptr<float>(0)[lower];
+    const float b = right.ptr<float>(0)[upper];
+    sample = weight < kSampleEpsilon ? a : ((1.0F - weight) * a) + (weight * b);
+    return std::isfinite(sample);
 }
 
 } // namespace
@@ -107,6 +124,10 @@ bool sgbm_validate(const SgbmParams& params, std::string* error) {
     }
     if (params.clahe && params.clahe_tile_grid <= 0) {
         set_error(error, "clahe_tile_grid must be positive");
+        return false;
+    }
+    if (!(params.lr_max_diff_px >= 0.0)) {
+        set_error(error, "lr_max_diff_px must be >= 0");
         return false;
     }
     return true;
@@ -156,19 +177,24 @@ bool sgbm_compute(const Image& left, const Image& right, const std::vector<std::
     cv::copyMakeBorder(left_gray, left_padded, 0, 0, padding, padding, cv::BORDER_CONSTANT, cv::Scalar(0));
     cv::copyMakeBorder(right_gray, right_padded, 0, 0, padding, padding, cv::BORDER_CONSTANT, cv::Scalar(0));
 
+    // The right view searches the mirrored window, so its disparities come out negative.
+    const int right_min_disparity = -params.min_disparity - params.num_disparities + 1;
     const int left_sentinel = (params.min_disparity - 1) * kFixedPointScale;
+    const int right_sentinel = (right_min_disparity - 1) * kFixedPointScale;
 
-    // One compute call: the left view only. A right-to-left pass would buy a left-right consistency
-    // check at the price of doubling the match stage, which measured 182 ms against 94 ms on the
-    // 640x480 oven pair — the check is not worth a second full search.
     cv::Mat left_fixed;
+    cv::Mat right_fixed;
     make_matcher(params, params.min_disparity)->compute(left_padded, right_padded, left_fixed);
+    make_matcher(params, right_min_disparity)->compute(right_padded, left_padded, right_fixed);
 
     const cv::Rect crop(padding, 0, width, height);
     cv::Mat left_cropped = left_fixed(crop);
+    cv::Mat right_cropped = right_fixed(crop);
 
     cv::Mat left_values(height, width, CV_32F);
+    cv::Mat right_values(height, width, CV_32F);
     unpack(left_cropped, left_values, kFixedPointScale);
+    unpack(right_cropped, right_values, kFixedPointScale);
 
     // Values outside the window the caller asked for are search artefacts, not measurements.
     const double limit_low = static_cast<double>(params.min_disparity);
@@ -177,13 +203,37 @@ bool sgbm_compute(const Image& left, const Image& right, const std::vector<std::
 
     for (int y = 0; y < height; ++y) {
         const auto* left_raw = left_cropped.ptr<short>(y);
+        const auto* right_raw = right_cropped.ptr<short>(y);
         const auto* mask_row = valid_mask.empty() ? nullptr : &valid_mask[static_cast<std::size_t>(y) * width];
         auto* left_row = left_values.ptr<float>(y);
+        auto* right_row = right_values.ptr<float>(y);
         for (int x = 0; x < width; ++x) {
             const bool masked_out = mask_row != nullptr && mask_row[x] == 0;
-            if (invalid_sentinel(left_raw[x], left_sentinel) || masked_out ||
-                !correspondence_valid(left_row[x], x, width, limit_low, limit_high)) {
+            if (invalid_sentinel(left_raw[x], left_sentinel) || masked_out) {
                 left_row[x] = static_cast<float>(kInvalid);
+            }
+            if (invalid_sentinel(right_raw[x], right_sentinel)) {
+                right_row[x] = static_cast<float>(kInvalid);
+            }
+        }
+    }
+
+    cv::Mat consistent(height, width, CV_8U, cv::Scalar(0));
+    for (int y = 0; y < height; ++y) {
+        cv::Mat right_row = right_values.row(y);
+        const auto* left_row = left_values.ptr<float>(y);
+        auto* ok_row = consistent.ptr<unsigned char>(y);
+        for (int x = 0; x < width; ++x) {
+            const float value = left_row[x];
+            if (!correspondence_valid(value, x, width, limit_low, limit_high)) {
+                continue;
+            }
+            float sample = 0.0F;
+            if (!right_sample(right_row, x, value, sample)) {
+                continue;
+            }
+            if (sample < 0.0F && std::abs(value + sample) <= params.lr_max_diff_px) {
+                ok_row[x] = 255;
             }
         }
     }
@@ -193,8 +243,11 @@ bool sgbm_compute(const Image& left, const Image& right, const std::vector<std::
     disparity.data.resize(static_cast<std::size_t>(width) * height);
     for (int y = 0; y < height; ++y) {
         const auto* left_row = left_values.ptr<float>(y);
+        const auto* ok_row = consistent.ptr<unsigned char>(y);
         auto* out = &disparity.data[static_cast<std::size_t>(y) * width];
-        std::copy(left_row, left_row + width, out);
+        for (int x = 0; x < width; ++x) {
+            out[x] = ok_row[x] != 0 ? left_row[x] : static_cast<float>(kInvalid);
+        }
     }
     return true;
 }

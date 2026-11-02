@@ -48,9 +48,8 @@ epipolar rectification, SGBM matching, disparity-to-depth conversion and point c
 - Agentic Coding workspace (`/workspace/`, git-ignored) — also holds the CLI consumer
 - Epipolar rectification with common-ROI cropping, rebased `Q`/`P` and a validity mask from remapping
   a white image
-- `cv::StereoSGBM` wrapper running a single left-to-right pass: padding, 1/16 px fixed-point
-  unpacking, search-window and image-bound clipping. No second pass means no left-right
-  consistency check, which halves the match stage (91 ms against 182 ms on the 640x480 pair)
+- `cv::StereoSGBM` wrapper: padding, 1/16 px fixed-point unpacking, search-window clipping and a
+  sub-pixel left-right consistency check
 - Depth from `Z = fx·|Tx| / (d − doffs)`, so a principal-point offset no longer skews the cloud
 - Point cloud in the rectified left camera frame, geometry only (`x y z`, no RGB); PCD and PLY
   writers (ascii or binary) without PCL
@@ -198,8 +197,8 @@ the very end, so a `conan create` log finishes with
 [example] rectified 640x480
 ...
 [example] saved     disparity.png, depth.png (measurement) and disparity_color.png, depth_color.png (colour), plus cloud.pcd in example_output
-[example] elapsed   load 14.4 ms, run 197.8 ms, write 143.5 ms, total 355.7 ms
-[example] memory    peak 34.1 MB resident
+[example] elapsed   load 15.1 ms, run 192.4 ms, write 38.9 ms, total 246.5 ms
+[example] memory    peak 33.7 MB resident
 ```
 
 instead of with the coverage table. The example also reports cost: `elapsed` splits the wall clock
@@ -212,7 +211,7 @@ reading it instead reported 72 MB for a run that truly peaks at 34 MB whenever t
 
 Look for that prefix, or run the binary directly from
 `test_package/build/<profile>/`; `ctest -N` will never list it. Two switches keep their distance:
-`trigger_tests` in `metadata.json` governs the 64 GTest cases and the coverage report, while the
+`trigger_tests` in `metadata.json` governs the 65 GTest cases and the coverage report, while the
 example runs whenever the test package is built for the host (`can_run`), regardless of that switch.
 The example's exit code becomes the recipe's verdict, so a red example fails `conan create` with
 `test_package/main.cpp exited with code N` rather than a bare build error; a red example also skips

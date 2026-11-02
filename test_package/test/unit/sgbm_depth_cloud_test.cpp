@@ -163,13 +163,13 @@ TEST(Depth, ClampRejectsOutOfRangeDepths) {
     EXPECT_FALSE(std::isfinite(depth.data[1]));
 }
 
-TEST(Sgbm, DoesNotRejectPixelsForALeftRightMismatch) {
-    // The matcher runs once, so there is no right-to-left map to compare against. A pixel that
-    // the old consistency check would have thrown away must now survive: an occluded bar, where
-    // the left view sees a surface the right view does not.
+TEST(Sgbm, RejectsOccludedPixelsByLeftRightConsistency) {
+    // An occluded bar: the left view sees a surface the right view does not, so the left estimate
+    // has no partner in the right map. The consistency check must drop those pixels instead of
+    // reporting a surface that does not exist. Removing the second pass doubles the match stage
+    // and keeps them, which measured 1757/3200 against 1017/3200 here.
     const sv::Image left = synthetic::blocky_texture(160, 120, 29U);
     sv::Image right = synthetic::shift_horizontal(left, kKnownShift);
-    // Punch a hole in the right view so no left pixel there has a consistent partner.
     for (int y = 40; y < 80; ++y) {
         for (int x = 40; x < 120; ++x) {
             right.data[(static_cast<std::size_t>(y) * right.width) + x] = 0;
@@ -188,12 +188,10 @@ TEST(Sgbm, DoesNotRejectPixelsForALeftRightMismatch) {
             }
         }
     }
-    // Measured on this input: 1757/3200 with the single pass, 1017/3200 when the second pass
-    // still ran and its consistency check discarded the mismatched half. The threshold sits
-    // between the two, so re-adding the check turns this test red instead of quietly costing
-    // another 90 ms per frame.
+    // Measured on this input: 1017/3200 with the check, 1757/3200 when the single pass kept them.
+    // The threshold sits between the two, so dropping the second pass turns this test red.
     constexpr std::size_t kHolePixels = 40U * 80U;
-    EXPECT_GT(hole_finite, kHolePixels * 42U / 100U) << hole_finite << " of " << kHolePixels;
+    EXPECT_LT(hole_finite, kHolePixels * 42U / 100U) << hole_finite << " of " << kHolePixels;
 }
 
 TEST(PointCloud, BackProjectsDepthWithThePinholeModel) {
