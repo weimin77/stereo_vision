@@ -1,0 +1,93 @@
+{
+  "name": "stereo_vision",
+  "target": "auto",
+  "version": "0.1.0",
+  "team": "HeT-FTI",
+  "license": "Apache-2.0",
+  "description": "Stereo vision pipeline: epipolar rectification, SGBM matching, depth maps and point clouds",
+  "authors": [
+    "Chen Zhang <chen2.zhang@szhittech.com>"
+  ],
+  "maintainers": [
+    "Chen Zhang <chen2.zhang@szhittech.com>"
+  ],
+  "topics": [
+    "stereo-vision",
+    "sgbm",
+    "rectification",
+    "point-cloud"
+  ],
+  "url": "https://github.com/HeT-FTI/fcpp.git",
+  "homepage": "https://github.com/HeT-FTI",
+  "cmake_version": "4.2.3",
+  "build_cppstd": "17",
+  "build_cstd": "11",
+  "build_type": "Release",
+  "activate_code_coverage": true,
+  "coverage": {
+    "floors": {
+      "Linux": {
+        "all": 70
+      },
+      "macOS": {
+        "all": 70
+      }
+    }
+  },
+  "is_shared": false,
+  "is_header": false,
+  "generate_modules_inplace": false,
+  "std_modules": "",
+  "user_modules": "",
+  "dependencies": {
+    "common": {},
+    "c": {},
+    "cpp": {
+      "OpenCV": [
+        "opencv::opencv"
+      ]
+    },
+    "infra": {
+      "GTest": [
+        "gtest::gtest"
+      ],
+      "pybind11": [
+        "pybind11::module"
+      ]
+    }
+  },
+  "component_requires": {},
+  "baremetal_white_list": [],
+  "doc_languages": [
+    "en",
+    "zh"
+  ],
+  "doc_versions": [
+    "1.0",
+    "2.0"
+  ],
+  "doc_doxygen_folders": [
+    "include",
+    "src",
+    "docs/doxygen/dox"
+  ],
+  "doc_doxygen_suffix": [
+    "h",
+    "c",
+    "hpp",
+    "cpp",
+    "dox",
+    "cxx"
+  ],
+  "trigger_tests": true,
+  "saving_tests_log": true,
+  "enable_python_bindings": false,
+  "workflow_triggers": {
+    "build": true,
+    "tests": true,
+    "release": true,
+    "docs": true,
+    "security_scan": true,
+    "cross_compile": false
+  }
+}

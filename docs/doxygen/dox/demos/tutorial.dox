@@ -1,0 +1,17 @@
+/**
+ * @example tutorial.dox
+ *
+ * End-to-end walk-through of the stereo pipeline. The example below runs the four stages in
+ * order and prints what each artefact means.
+ *
+ * @include demo.cxx
+ *
+ * @par Description:
+ * - Load the configuration: matcher parameters and calibration paths, but never image paths.
+ * - Inject the image pair; set_input_image accepts paths or in-memory buffers.
+ * - run() rectifies, matches and converts to depth. Nothing is written to disk here.
+ * - get_* returns references to the cached results; save_* writes them where the caller asks.
+ *
+ * @note The point cloud is the expensive artefact, so it is built on the first get_pointcloud()
+ * call and cached until the next run().
+ */

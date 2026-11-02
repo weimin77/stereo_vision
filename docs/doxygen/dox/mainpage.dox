@@ -1,0 +1,70 @@
+/*!
+ * @mainpage Stereo Vision Pipeline
+ *
+ * @section intro_sec [en] What this library does
+ *     This library turns a calibrated stereo pair into a disparity map, a depth map and a point
+ *     cloud. The chain is: epipolar rectification, SGBM matching, disparity to depth, depth to
+ *     point cloud.
+ *
+ *     Images are never named by the configuration file: the caller injects them through
+ *     sv::Pipeline::set_input_image(), and reads or writes every artefact through an explicit call.
+ * @section intro_sec [zh] 库的职责
+ *     本库把一对已标定的双目图像转换为视差图、深度图与点云。处理链路为：极线校正、SGBM 匹配、
+ *     视差转深度、深度转点云。
+ *
+ *     配置文件不记录图像路径：图像由 sv::Pipeline::set_input_image() 注入，
+ *     所有产物都通过显式接口读取或写出。
+ *
+ * @section features_sec [en] Features
+ *     - Rectification with common-ROI cropping, rebased Q/P and a validity mask
+ *     - cv::StereoSGBM with padding, 1/16 px unpacking and a sub-pixel left-right check
+ *     - Depth from Z = fx * |Tx| / (d - doffs), so a principal-point offset does not skew the cloud
+ *     - PCD and PLY writers (ascii or binary) without a PCL dependency
+ * @section features_sec [zh] 特性
+ *     - 极线校正：公共有效区裁剪、Q/P 主点修正、有效性掩膜
+ *     - cv::StereoSGBM 封装：padding、1/16 像素反定点、亚像素左右一致性检查
+ *     - 深度按 Z = fx * |Tx| / (d - doffs) 计算，主点偏移不会让点云整体侧移
+ *     - PCD 与 PLY 写出（ascii 或 binary），不依赖 PCL
+ *
+ * @section usage_sec [en] Usage
+ *     @code{.cpp}
+ *     #include "sv_config.hpp"
+ *     #include "sv_pipeline.hpp"
+ *
+ *     sv::Config config;
+ *     std::string error;
+ *     sv::config_load("sgbm_config.json", config, &error);
+ *
+ *     sv::Pipeline pipeline{config};
+ *     pipeline.set_calibration_files(config.stereo_yml, config.left_mono_yml, config.right_mono_yml);
+ *     pipeline.set_input_image("left.png", "right.png");
+ *     pipeline.run();
+ *
+ *     pipeline.save_disparity_image("out/disparity.png");
+ *     pipeline.save_depth_image("out/depth.png");
+ *     pipeline.save_pointcloud("out/cloud.ply");
+ *     @endcode
+ * @section usage_sec [zh] 用法
+ *     同上。run() 只做计算，不写任何文件；哪些产物落地由调用方决定。
+ *
+ * @section modules_sec [en] Modules
+ *     - sv_types: Image, DisparityImage, DepthImage, PointCloud, RectifyGeometry, RunReport
+ *     - sv_image_io: jpg/png/bmp input, 16-bit png and 32-bit tif output
+ *     - sv_calibration: stereo.yml plus optional per-camera intrinsics
+ *     - sv_rectify: stereoRectify, undistort maps, common ROI, validity mask
+ *     - sv_sgbm: cv::StereoSGBM wrapper with the left-right check
+ *     - sv_depth: disparity to metres
+ *     - sv_pointcloud: back-projection and PCD/PLY writers
+ *     - sv_config: sgbm_config.json parsing and search-window derivation
+ *     - sv_pipeline: the facade described above
+ * @section modules_sec [zh] 模块
+ *     同上，每个模块是 include/sv_*.hpp 与 src/sv_*.cpp 的配对文件。
+ *
+ * @section tutorial_sec [en] Tutorial
+ *     See @ref tutorial.dox for a walk-through of the whole chain.
+ * @section tutorial_sec [zh] 教程
+ *     完整流程见 @ref tutorial.dox。
+ *
+ * @author Chen Zhang <chen.zhang_06sept@foxmail.com>
+ * @since 1.0
+ */

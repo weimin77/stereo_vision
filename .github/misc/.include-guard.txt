@@ -1,0 +1,2 @@
+# Layering guard: each line is "<scope glob> <forbidden include regex>", scope relative to include/ and src/.
+**              stm32|esp_|nrf|cmsis|Arduino

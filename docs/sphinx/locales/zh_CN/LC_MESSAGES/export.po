@@ -1,0 +1,756 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025, fcpp-innovation
+# This file is distributed under the same license as the fcpp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: fcpp 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-02 13:31+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/export.rst:2 da3d3f3a564348a88bbc12b90c1ca41b
+msgid "_`Full demonstration of specific lib`"
+msgstr ""
+
+#: ../../source/export.rst:4 381afbd34da94eaaa5299246ff739004
+msgid ""
+"Brief overview: the library :code:`stereo_vision` turns a calibrated "
+"stereo pair into a disparity map, a depth map and a point cloud. The "
+"chain is: epipolar rectification, SGBM matching, disparity to depth, "
+"depth to point cloud."
+msgstr ""
+
+#: ../../source/export.rst:9 a54a470e10434b7fbeeb05c6dc3356d4
+msgid "_`Theories or introduction`"
+msgstr ""
+
+#: ../../source/export.rst:11 7660719f7ecb473b9b90f32718f642ff
+msgid ""
+"A rectified stereo pair observes one scene point from two positions. Once"
+" the epipolar lines are horizontal, the horizontal coordinate difference "
+"of the match is the disparity :math:`d`, and depth follows from the "
+"rectified geometry:"
+msgstr ""
+
+#: ../../source/export.rst:15 2f2f977ac6cd43e3ae3a678be9cd77b5
+msgid ""
+"Z = \\frac{f_x \\, |T_x|}{d - d_{offs}}, \\qquad d_{offs} = c_{x1} - "
+"c_{x2}"
+msgstr ""
+
+#: ../../source/export.rst:20 704dcdea2bc24e65ab93fa65ff1f380c
+#, python-brace-format
+msgid ""
+":math:`f_x` is the rectified focal length, :math:`T_x` the baseline "
+"component along the camera x axis, and :math:`c_{x1}, c_{x2}` the "
+"horizontal principal points of the two rectified views. The data term is "
+"the matching cost of the SGBM energy, the smoothness term is the penalty "
+"paid when neighbouring pixels take different labels:"
+msgstr ""
+
+#: ../../source/export.rst:25 3c6b562b7a564584a5315af1698fa43b
+msgid ""
+"E(D) = \\sum_p C(p, D_p) + \\sum_{q \\in \\mathcal{N}_p} P_1 \\, "
+"\\delta(\\lvert D_p - D_q \\rvert = 1)\n"
+"     + \\sum_{q \\in \\mathcal{N}_p} P_2 \\, \\delta(\\lvert D_p - D_q "
+"\\rvert > 1)"
+msgstr ""
+
+#: ../../source/export.rst:30 91fb9f9624354ed9b48df92df01296ee
+#, python-brace-format
+msgid ""
+"The energy is minimised along several scanline directions and the per-"
+"pixel minimum is kept, which is what lets textureless regions take a "
+"plausible label instead of following noise. :math:`P_1` and :math:`P_2` "
+"are derived from the block size: :math:`P_1 = p_1^{factor} b^2`, "
+":math:`P_2 = p_2^{factor} b^2`."
+msgstr ""
+
+#: ../../source/export.rst:35 06583acc776a4be8af887dbf15e91cbc
+msgid ""
+"Three details make the difference between a usable result and a "
+"plausible-looking one:"
+msgstr ""
+
+#: ../../source/export.rst:37 3385d0e3c9424bc5813c1ed44d5a6467
+#, python-brace-format
+msgid ""
+":math:`d_{offs}` is generally not zero. Dropping it shifts the whole "
+"cloud sideways by :math:`d_{offs} Z / f_x`, while the depth values "
+"themselves stay correct."
+msgstr ""
+
+#: ../../source/export.rst:39 f4f996e9bf0b4a96bfe4a5ed3776a653
+msgid ""
+"Cropping to the common valid region translates the origin, so ``Q``'s "
+"fourth column and the principal points of ``P1``/``P2`` must move with "
+"it."
+msgstr ""
+
+#: ../../source/export.rst:41 0b1c9c06142c426c85869a998c96e352
+msgid ""
+"Remapping a white image through the same maps marks the pixels that "
+"really carry data. Without that mask, the matcher reads the black border "
+"as scene content and invents disparity there."
+msgstr ""
+
+#: ../../source/export.rst:45 2a1729fe56dd42fabf003af70042a60d
+#, fuzzy
+msgid "_`Usage demonstration`"
+msgstr "使用演示"
+
+#: ../../source/export.rst:47 f248df6e477e46eea26b2ec033432eda
+msgid ""
+"The pipeline is a facade: images enter through ``set_input_image``, "
+"parameters through ``Config``, and every artefact leaves through an "
+"explicit call. ``run()`` computes and writes nothing, so a caller can "
+"inspect the result before deciding which files to produce."
+msgstr ""
+
+#: ../../source/export.rst:51 195fcafbb3734bd396c9b7d612d25911
+msgid "stereo pipeline"
+msgstr ""
+
+#: ../../source/export.rst:80 d54fbc64af344ff5a29f4587cceaff2f
+msgid "_`Applying results`"
+msgstr ""
+
+#: ../../source/export.rst:82 a7950d8581254fd5954ee01882431540
+msgid "Four artefacts come out of a run, and each has its own consumer:"
+msgstr ""
+
+#: ../../source/export.rst:88 f73b99b572524b6da2c0de23ece85a71
+msgid "Artefact"
+msgstr ""
+
+#: ../../source/export.rst:89 4def0b677c1d4bc69f5b2f2914d01f4b
+msgid "Form"
+msgstr ""
+
+#: ../../source/export.rst:90 dd0297583f8743a2b607f7e455e78159
+msgid "Typical use"
+msgstr ""
+
+#: ../../source/export.rst:91 91d07c66e95941f998913b002a927835
+msgid "Disparity map"
+msgstr ""
+
+#: ../../source/export.rst:92 00cd5e14a92a42db83b626accf3e4577
+msgid "``float`` px, NaN invalid; png is 1/16 px fixed point"
+msgstr ""
+
+#: ../../source/export.rst:93 97c5f3fd16074826bfb46fd7127c9a96
+msgid "Quality inspection, comparison against a matcher baseline"
+msgstr ""
+
+#: ../../source/export.rst:94 2147f14bad294ef688e1901d4b62471e
+msgid "Depth map"
+msgstr ""
+
+#: ../../source/export.rst:95 597c72982de44f29b49eb80782227465
+msgid "``float`` m, NaN invalid; png is millimetres"
+msgstr ""
+
+#: ../../source/export.rst:96 c57bc703640a4f0c843d80dbc3ce84c5
+msgid "Metric measurement, depth gating, near/far clipping"
+msgstr ""
+
+#: ../../source/export.rst:97 f32f1d7d6e0e46909a18c836467cc344
+msgid "Point cloud"
+msgstr ""
+
+#: ../../source/export.rst:98 8a5e70345867417b9e868307d0574d25
+msgid "PCD (``x y z rgb``) or PLY (``x y z`` + RGB)"
+msgstr ""
+
+#: ../../source/export.rst:99 73b37ae33f7544749b3ae2b9cd39bd1d
+msgid "Registration, plane/box fitting, bin picking"
+msgstr ""
+
+#: ../../source/export.rst:100 bc5649d45206450092287c8968aac1b1
+msgid "Validity mask"
+msgstr ""
+
+#: ../../source/export.rst:101 ae2d884d7653466ea7c53f7e8db8fa23
+msgid "``uint8``, 255 usable"
+msgstr ""
+
+#: ../../source/export.rst:102 e290cf95494f4434940bda4d420e9ccd
+msgid "Excluding border and occluded pixels from downstream statistics"
+msgstr ""
+
+#: ../../source/export.rst:104 f81c7450edc9458fb0808ff7aa98e800
+msgid ""
+"The point cloud is expressed in the rectified left camera frame: x right,"
+" y down, z forward, in metres. Because ``pointcloud.keep_invalid`` "
+"defaults to false, the cloud holds only pixels with a valid depth; the "
+"full pixel grid can be rebuilt from the disparity map plus ``fx``, "
+"``cx``, ``cy``, ``doffs`` and ``baseline``, all of which the run report "
+"records."
+msgstr ""
+
+#: ../../source/export.rst:110 cf923450a1214efeab847e7afbee0743
+msgid "_`Algorithm benchmark from test frame`"
+msgstr ""
+
+#: ../../source/export.rst:112 cb7c8cf8890746fcb713052598e62951
+msgid ""
+"Measured on a 640x480 synthetic pair with a known 20 px horizontal shift,"
+" ``fx = 500``, ``baseline = 0.1 m``, window ``16 + 16``; single frame, "
+"Release build:"
+msgstr ""
+
+#: ../../source/export.rst:115 bb770a8928414ba1a88a5e73c4582e39
+msgid "single-frame cost and agreement"
+msgstr ""
+
+#: ../../source/export.rst:120 b43b6693eed443aa8d9660151f9a7dd5
+msgid "stage"
+msgstr ""
+
+#: ../../source/export.rst:120 fc9cb65cf75c4d16a10fca85399cad01
+msgid "time"
+msgstr ""
+
+#: ../../source/export.rst:120 b3751c68a9fa411b8e160411878ac503
+msgid "result"
+msgstr ""
+
+#: ../../source/export.rst:122 bb8881d0c1244f22b6ed956f00f7bcfa
+msgid "rectify"
+msgstr ""
+
+#: ../../source/export.rst:122 8eda1b04eeca4223b8cd2647c48a5a53
+msgid "4.9 ms"
+msgstr ""
+
+#: ../../source/export.rst:122 0e6936e27ba247c98fb86002aea1794e
+msgid "``639x479`` after common-ROI cropping"
+msgstr ""
+
+#: ../../source/export.rst:123 1acd075a1b444ad598ca6d36baba6fc3
+msgid "match"
+msgstr ""
+
+#: ../../source/export.rst:123 dd6730ff609245b1a3c1a9aa5460dd1b
+msgid "80.3 ms"
+msgstr ""
+
+#: ../../source/export.rst:123 3f68226382484d4eb3589a5fbfab67b8
+msgid "median disparity ``20.00 px``"
+msgstr ""
+
+#: ../../source/export.rst:124 202d9105911f4e65850155b00e4db377
+msgid "depth"
+msgstr ""
+
+#: ../../source/export.rst:124 ac913e7830f8433699d4f75d0c7cfcee
+msgid "0.4 ms"
+msgstr ""
+
+#: ../../source/export.rst:124 92050cc6023f49dfaf83210894eaf818
+msgid "median depth ``2.500 m``"
+msgstr ""
+
+#: ../../source/export.rst:125 8b922e34528248289ce08bd119074055
+msgid "coverage"
+msgstr ""
+
+#: ../../source/export.rst:125 ../../source/export.rst:126
+#: 62248f3497864634bd1bd6385d1dfa0c f9d8f63fa5ab4522b44317fe4fed96b8
+msgid "—"
+msgstr ""
+
+#: ../../source/export.rst:125 e3c55fb210ca4fbc97862589c8f9cf19
+msgid "``96.8 %`` of pixels valid"
+msgstr ""
+
+#: ../../source/export.rst:126 ce51c30acd53484da0c0badaf965d618
+msgid "point cloud"
+msgstr ""
+
+#: ../../source/export.rst:126 0044cb5bdb7b4eb1bceb1919fa074963
+msgid "``296355`` points"
+msgstr ""
+
+#: ../../source/export.rst:129 8e43a901f6a14aa497bbb5543cece354
+#, python-format
+msgid ""
+"The median disparity equals the injected shift and the median depth "
+"equals :math:`f_x \\lvert T_x \\rvert / d`, which is the property the "
+"unit tests assert. Suite level: 54 GTest cases, 81.3 % line coverage."
+msgstr ""
+
+#~ msgid "heatmap for design matrix"
+#~ msgstr ""
+
+#~ msgid "The following."
+#~ msgstr ""
+
+#~ msgid "No good."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Or further combined with other image "
+#~ "processing pipelines to obtain more "
+#~ "complicated application such as background "
+#~ "blur, showed in :numref:`Figure %s "
+#~ "<background blur>`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Or further combined with other image "
+#~ "processing pipelines to obtain more "
+#~ "complicated application such as background "
+#~ "blur (fill the real implementation of"
+#~ " :code`// downstream tasks` in "
+#~ ":numref:`background blur`), showed in "
+#~ ":numref:`Figure %s <background blur>`."
+#~ msgstr ""
+
+#~ msgid "_`Applying effect`"
+#~ msgstr ""
+
+#~ msgid "heee."
+#~ msgstr ""
+
+#~ msgid "cortex-a53(*4)"
+#~ msgstr ""
+
+#~ msgid "cortex-a76(*4)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The platforms with B+ or greater "
+#~ "scores are suggested to run this "
+#~ "algorithms."
+#~ msgstr ""
+
+#~ msgid "_`Full demonstration of specific lib`"
+#~ msgstr "特定库的完整演示"
+
+#~ msgid ""
+#~ "Brief overview: the library :code:`fcpp` "
+#~ "integrates segmentation algorithms for natural"
+#~ " images."
+#~ msgstr "简要概述：:code:`fcpp` 库集成了针对自然图像的分割算法。"
+
+#~ msgid "_`Theories or introduction`"
+#~ msgstr "理论或简介"
+
+#~ msgid ""
+#~ "Segmentation in :code:`fcpp` is an "
+#~ "iterative image segmentation algorithm that"
+#~ " separates foreground from background using"
+#~ " user input (e.g., a bounding box)."
+#~ " It models color distributions of "
+#~ "foreground and background with Gaussian "
+#~ "Mixture Models (GMMs), and formulates "
+#~ "segmentation as an energy minimization "
+#~ "problem on a graph. The algorithm "
+#~ "alternates between estimating pixel labels "
+#~ "via graph cuts and refining the "
+#~ "GMM parameters, converging to an optimal"
+#~ " segmentation."
+#~ msgstr ""
+#~ ":code:`fcpp` "
+#~ "中的分割是一种迭代式图像分割算法，它利用用户输入（例如边界框）将前景从背景中分离出来。它使用高斯混合模型 (GMMs) "
+#~ "对前景和背景的颜色分布进行建模，并将分割表述为图上的能量最小化问题。该算法在通过图割估计像素标签和细化 GMM "
+#~ "参数之间交替进行，最终收敛至最优分割结果。"
+
+#~ msgid ""
+#~ "E(\\mathbf{L}) = \\sum_p D_p(l_p) + "
+#~ "\\lambda \\sum_{p,q \\in \\mathcal{N}} w_{p,q}"
+#~ " \\cdot \\delta(l_p \\neq l_q)"
+#~ msgstr ""
+#~ "E(\\mathbf{L}) = \\sum_p D_p(l_p) + "
+#~ "\\lambda \\sum_{p,q \\in \\mathcal{N}} w_{p,q}"
+#~ " \\cdot \\delta(l_p \\neq l_q)"
+
+#~ msgid ""
+#~ "The total energy is composed of "
+#~ "the data term (pixel assignment cost)"
+#~ " and the smoothness term (penalty for"
+#~ " the difference in labels of adjacent"
+#~ " pixels). The unary term :math:`D_p(l_p)"
+#~ " = -\\log P(I_p | \\Theta_{l_p})` "
+#~ "describes The negative log-likelihood of"
+#~ " the color :math:`I_p` of pixel "
+#~ ":math:`p` under the foreground or "
+#~ "background GMM model :math:`\\Theta_{l_p}`, "
+#~ "while :math:`w_{p, q}` is the edge "
+#~ "weight between pixel :math:`p` and "
+#~ ":math:`q`."
+#~ msgstr ""
+#~ "总能量由数据项（像素分配代价）和平滑项（相邻像素标签差异的惩罚）组成。一元项 \\ :math:`D_p(l_p)"
+#~ " = -\\log P(I_p | \\Theta_{l_p})`\\ "
+#~ "描述了像素 :math:`p` 的颜色 :math:`I_p` 在前台或后台GMM模型"
+#~ " :math:`\\Theta_{l_p}` 下的负对数似然，而 :math:`w_{p, q}`"
+#~ " 是像素 :math:`p` 和 :math:`q` 之间的边权重。"
+
+#~ msgid "This part is optional."
+#~ msgstr "此部分是可选的。"
+
+#~ msgid ""
+#~ "The segmentation function segments the "
+#~ "input image x by automatically defining"
+#~ " a bounding box with margins "
+#~ "proportional to image size. It "
+#~ "initializes foreground and background models,"
+#~ " then runs inner grabCut with the "
+#~ "rectangle mode for 5 iterations. The "
+#~ "output mask is refined to distinguish"
+#~ " foreground (True) from background (False),"
+#~ " effectively extracting the main object "
+#~ "while suppressing borders. Ideal for "
+#~ "automated foreground extraction without user"
+#~ " input."
+#~ msgstr ""
+#~ "分割函数通过自动定义一个边距与图像大小成比例的边界框来分割输入图像 x。它初始化前景和背景模型，然后以矩形模式运行内部 "
+#~ "GrabCut 算法 5 次迭代。输出掩码经过细化以区分前景 (True) "
+#~ "和背景 (False)，在有效提取主体的同时抑制边缘。非常适用于无需用户输入的自动化前景提取。"
+
+#~ msgid "segmentation demo"
+#~ msgstr "分割演示"
+
+#~ msgid "Further explanation for your code block."
+#~ msgstr "关于您代码块的进一步说明。"
+
+#~ msgid "_`Applying results`"
+#~ msgstr "应用结果"
+
+#~ msgid ""
+#~ "The following illustration takes pictures "
+#~ "of doll, person, and chicken wing "
+#~ "as input. The algorithm can "
+#~ "automatically calculate the their contours "
+#~ "and areas (as shown in :numref:`Figure"
+#~ " %s <images segmentation>`)."
+#~ msgstr ""
+#~ "下图以玩偶、人物和鸡翅的照片作为输入。该算法可以自动计算它们的轮廓和面积（如 :numref:`图 %s "
+#~ "<images segmentation>` 所示）。"
+
+#~ msgid "Image segmentation illustration"
+#~ msgstr "图像分割示意图"
+
+#~ msgid ""
+#~ "With this segmentation algorithm, you "
+#~ "can extract the main object with "
+#~ "binding box in pictures. Like the "
+#~ ":numref:`Figure %s <food segmentations>` "
+#~ "illustrated, the proper binding boxes "
+#~ "can extract the main food objects, "
+#~ "which step is helpful for downstream "
+#~ "analysis."
+#~ msgstr ""
+#~ "利用此分割算法，您可以在图片中通过边界框提取主要物体。如\\ :numref:`图 %s <food"
+#~ " segmentations>`\\ 所示，合适的边框可以提取出主要食物对象，这一步骤有助于下游分析。"
+
+#~ msgid "Get foods from original figure"
+#~ msgstr "从原图中获取食物"
+
+#~ msgid ""
+#~ "Or further combined with other image "
+#~ "processing pipelines to obtain more "
+#~ "complicated application such as background "
+#~ "blur (fill the real implementation of"
+#~ " :code:`// downstream tasks` in "
+#~ ":numref:`background blur`), showed in "
+#~ ":numref:`Figure %s <background blur>`."
+#~ msgstr ""
+#~ "或者进一步结合其他图像处理流水线以获得更复杂的应用，例如背景虚化（在 :numref:`background "
+#~ "blur` 中填充 :code:`// downstream tasks` "
+#~ "的实际实现），如 :numref:`图 %s <background blur>` "
+#~ "所示。"
+
+#~ msgid "Background blur via segmentation algorithm"
+#~ msgstr "通过分割算法实现背景虚化"
+
+#~ msgid "_`Algorithm benchmark from test frame`"
+#~ msgstr "来自测试框架的算法基准测试"
+
+#~ msgid ""
+#~ "The following table displays our testing"
+#~ " matrix. As-checked platforms both in"
+#~ " fields of **unit** and **stress**, "
+#~ "are ideal choices if necessary."
+#~ msgstr "下表展示了我们的测试矩阵。在 **单元测试** 和 **压力测试** 领域均已验证的平台，如有需要，是理想的选择。"
+
+#~ msgid "test result among platforms"
+#~ msgstr "跨平台测试结果"
+
+#~ msgid "architecture"
+#~ msgstr "架构"
+
+#~ msgid "OS"
+#~ msgstr "操作系统"
+
+#~ msgid "CPU"
+#~ msgstr "CPU"
+
+#~ msgid "unit total"
+#~ msgstr "单元测试总计"
+
+#~ msgid "stress total"
+#~ msgstr "压力测试总计"
+
+#~ msgid "score"
+#~ msgstr "得分"
+
+#~ msgid "x86_64"
+#~ msgstr "x86_64"
+
+#~ msgid "Windows"
+#~ msgstr "Windows"
+
+#~ msgid "Core-i7 13gen"
+#~ msgstr "Core-i7 13代"
+
+#~ msgid "14822ms"
+#~ msgstr "14822毫秒"
+
+#~ msgid "173297ms"
+#~ msgstr "173297毫秒"
+
+#~ msgid "A"
+#~ msgstr "A"
+
+#~ msgid "Linux"
+#~ msgstr "Linux"
+
+#~ msgid "AMD Ryzen 7"
+#~ msgstr "AMD Ryzen 7"
+
+#~ msgid "13823ms"
+#~ msgstr "13823毫秒"
+
+#~ msgid "154512ms"
+#~ msgstr "154512毫秒"
+
+#~ msgid "A+"
+#~ msgstr "A+"
+
+#~ msgid "arm"
+#~ msgstr "arm"
+
+#~ msgid "cortex-m3"
+#~ msgstr "Cortex-M3"
+
+#~ msgid "failed"
+#~ msgstr "失败"
+
+#~ msgid "D"
+#~ msgstr "D"
+
+#~ msgid "cortex-a53"
+#~ msgstr "Cortex-A53"
+
+#~ msgid "25392ms"
+#~ msgstr "25392毫秒"
+
+#~ msgid "254129ms"
+#~ msgstr "254129毫秒"
+
+#~ msgid "B"
+#~ msgstr "B"
+
+#~ msgid "cortex-a53(4)"
+#~ msgstr "Cortex-A53(4核)"
+
+#~ msgid "20365ms"
+#~ msgstr "20365毫秒"
+
+#~ msgid "233820ms"
+#~ msgstr "233820毫秒"
+
+#~ msgid "B+"
+#~ msgstr "B+"
+
+#~ msgid "cortex-a76(4)"
+#~ msgstr "Cortex-A76(4)"
+
+#~ msgid "16928ms"
+#~ msgstr "16928毫秒"
+
+#~ msgid "198923ms"
+#~ msgstr "198923毫秒"
+
+#~ msgid "..."
+#~ msgstr "..."
+
+#~ msgid "risc-v"
+#~ msgstr "risc-v"
+
+#~ msgid "SiFive U74"
+#~ msgstr "SiFive U74"
+
+#~ msgid "35329ms"
+#~ msgstr "35329毫秒"
+
+#~ msgid "735723ms"
+#~ msgstr "735723毫秒"
+
+#~ msgid "C"
+#~ msgstr "C"
+
+#~ msgid "Allwinner D1"
+#~ msgstr "全志 D1"
+
+#~ msgid "38234ms"
+#~ msgstr "38234毫秒"
+
+#~ msgid "825231ms"
+#~ msgstr "825231毫秒"
+
+#~ msgid "C-"
+#~ msgstr "C-"
+
+#~ msgid ""
+#~ "The platforms with B+ or greater "
+#~ "scores in :numref:`Table %s <test "
+#~ "results>` are suggested to run this "
+#~ "algorithms."
+#~ msgstr "建议使用 :numref:`表 %s <test results>` 中评分为 B+ 或更高的平台来运行此算法。"
+
+#~ msgid "_`Worked example`"
+#~ msgstr ""
+
+#~ msgid "_`What the chain computes`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A rectified stereo pair observes the "
+#~ "same point from two positions. Once "
+#~ "the epipolar lines are horizontal, the"
+#~ " horizontal coordinate difference of the"
+#~ " match is the disparity :math:`d`, "
+#~ "and depth follows from the rectified "
+#~ "geometry:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ ":math:`f_x` is the rectified focal "
+#~ "length, :math:`T_x` the baseline component "
+#~ "along the camera x axis, and "
+#~ ":math:`c_{x1}, c_{x2}` the horizontal "
+#~ "principal points of the two rectified"
+#~ " views. Setting :math:`d_{offs} = 0` "
+#~ "is only correct when the two views"
+#~ " happen to share a principal point;"
+#~ " otherwise the whole cloud shifts "
+#~ "sideways by :math:`d_{offs} Z / f_x`."
+#~ msgstr ""
+
+#~ msgid "_`Stage 1: rectification`"
+#~ msgstr "使用演示"
+
+#~ msgid ""
+#~ "``stereoRectify`` produces ``R1``, ``R2``, "
+#~ "``P1``, ``P2`` and ``Q``; "
+#~ "``initUndistortRectifyMap`` turns those into a"
+#~ " map pair per camera, and ``remap``"
+#~ " resamples the images. Three details "
+#~ "matter:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``alpha`` trades coverage for resolution. "
+#~ "``alpha = 0`` keeps every source "
+#~ "pixel and changes the focal length, "
+#~ "so the depth equation must use the"
+#~ " rectified :math:`f_x`, not the original"
+#~ " one."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The common ROI of the two views"
+#~ " is cropped away, and ``Q``'s fourth"
+#~ " column plus the principal points of"
+#~ " ``P1``/``P2`` are rebased onto the "
+#~ "crop. A crop is a translation of"
+#~ " the origin."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Remapping a white image with the "
+#~ "same maps yields the pixels that "
+#~ "really carry data; without that mask "
+#~ "the matcher reads the black border "
+#~ "as scene content and produces spurious"
+#~ " disparity there."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``cv::StereoSGBM`` runs on the gray "
+#~ "images, padded left and right so "
+#~ "the search window never runs off "
+#~ "the image. It reports 1/16 px "
+#~ "fixed point with ``(minDisparity - 1)"
+#~ " * 16`` marking \"no match\". The "
+#~ "pipeline unpacks to float, drops values"
+#~ " outside the configured window, and "
+#~ "checks left-right consistency with a "
+#~ "bilinear sample of the right-view "
+#~ "map at :math:`x - d`."
+#~ msgstr ""
+
+#~ msgid "_`Stage 3: depth and cloud`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Depth is computed per pixel with "
+#~ "the equation above; NaN marks pixels "
+#~ "without a valid measurement. The point"
+#~ " cloud back-projects with the pinhole"
+#~ " model in the rectified left camera"
+#~ " frame:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "X = \\frac{(u - c_x) Z}{f_x}, "
+#~ "\\qquad Y = \\frac{(v - c_y) "
+#~ "Z}{f_y}, \\qquad Z = Z"
+#~ msgstr ""
+
+#~ msgid "_`Running it`"
+#~ msgstr ""
+
+#~ msgid "minimal pipeline"
+#~ msgstr ""
+
+#~ msgid "_`Reading the artefacts`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``save_disparity_image`` writes 16-bit ``round(d "
+#~ "* 16)`` for png and 32-bit float"
+#~ " for tif; the png form keeps "
+#~ "the sub-pixel information exactly, "
+#~ "because 1/16 px is the matcher's "
+#~ "own resolution. ``save_depth_image`` writes "
+#~ "millimetres for png and metres for "
+#~ "tif. PCD carries ``x y z rgb`` "
+#~ "with the colour packed into a "
+#~ "float, PLY carries ``x y z red "
+#~ "green blue``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The run report records ``fx``, ``cx``,"
+#~ " ``cy``, ``doffs``, ``baseline`` and the"
+#~ " disparity percentiles, which is everything"
+#~ " needed to rebuild the full pixel "
+#~ "grid if ``pointcloud.keep_invalid`` is false."
+#~ msgstr ""
+

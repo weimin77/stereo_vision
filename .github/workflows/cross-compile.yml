@@ -1,0 +1,109 @@
+name: Cross Compile
+
+# Online (GitHub-hosted) cross-compile check, called by ci-orchestrator.yml on
+# the :hammer_and_wrench: gitmoji. It builds the library through Conan with a
+# generated cross profile -- README's `conan create . -pr:h=<profile> -tf=` flow,
+# using benchmark/script/run_bench.py's profile conventions -- and reports the
+# architecture of the produced archives. No board and no test folder.
+# The on-board route (real hardware, self-hosted runner) is hetai-package-matrix.yml.
+on:
+  workflow_call:
+    inputs:
+      pkg_name:
+        description: 'Package name from metadata.json'
+        required: true
+        type: string
+
+env:
+  CONAN_HOME: ~/.conan2
+  # readelf prints localized field names, which would break the parsing
+  LC_ALL: C
+
+jobs:
+  cross-compile:
+    name: Cross Compile (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    # Backstop: a stalled apt mirror would otherwise hold this job (and the push concurrency group) for 360 minutes.
+    timeout-minutes: 40
+    strategy:
+      # fail-fast off: each target must report its own result
+      fail-fast: false
+      matrix:
+        include:
+          # A-core / arm-linux (OS present) and M-core / baremetal (no OS)
+          # NOTE: the g++ driver is a separate package for the Linux targets
+          # (gcc-aarch64-linux-gnu ships only the C compiler); arm-none-eabi
+          # bundles both, hence the asymmetry.
+          - target: arm-linux-a53
+            packages: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          - target: mcu-m4
+            packages: gcc-arm-none-eabi
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install Conan
+        shell: bash
+        run: |
+          pip install --only-binary :all: conan==2.31.2
+
+      - name: Prepare the apt download cache
+        shell: bash
+        # /var/cache/apt/archives is root-owned: hand it to the runner user before the cache action restores into it.
+        run: sudo chown -R "$USER:$USER" /var/cache/apt/archives
+
+      - name: Restore the apt download cache
+        uses: actions/cache@v6
+        with:
+          path: /var/cache/apt/archives
+          # Keyed by target: the two matrix legs install different packages.
+          key: apt-archives-${{ matrix.target }}-${{ hashFiles('.github/workflows/cross-compile.yml') }}
+          restore-keys: |
+            apt-archives-${{ matrix.target }}-
+
+      - name: Install the cross toolchain and the Conan default profile
+        shell: bash
+        # Cold-cache bound: 234 MB of aarch64 packages took 11-17 min on a degraded mirror, while unpacking took seconds.
+        timeout-minutes: 30
+        run: |
+          printf '%s\n' \
+            'Acquire::Retries "3";' \
+            'Acquire::http::Timeout "30";' \
+            'Acquire::https::Timeout "30";' \
+            'Acquire::Languages "none";' \
+            | sudo tee /etc/apt/apt.conf.d/99-ci-retries >/dev/null
+          sudo apt-get update
+          # noninteractive + confdef/confold avoid prompt-looking hangs; keep --no-install-recommends off (newlib for arm-none-eabi is a Recommends).
+          sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a \
+            apt-get install -y \
+            -o Dpkg::Options::=--force-confdef \
+            -o Dpkg::Options::=--force-confold \
+            ${{ matrix.packages }}
+          conan profile detect --force
+
+      - name: Normalize the apt archive cache
+        if: always()
+        shell: bash
+        # The post-job save runs as the runner user but apt creates partial/ as root 0700, which fails the save silently.
+        run: |
+          sudo chown -R "$USER:$USER" /var/cache/apt/archives 2>/dev/null || true
+          du -sh /var/cache/apt/archives 2>/dev/null || true
+          ls -1 /var/cache/apt/archives/*.deb 2>/dev/null | wc -l | xargs echo "cached .deb files:"
+
+      - name: Cache Conan packages
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.CONAN_HOME }}
+          key: conan-cross-${{ matrix.target }}-${{ hashFiles('conanfile.py', 'conandata.yml', 'metadata.json') }}
+          restore-keys: |
+            conan-cross-${{ matrix.target }}-
+
+      - name: Cross-compile and check the artifact architecture
+        shell: bash
+        run: python3 .github/misc/cross_compile_check.py --target ${{ matrix.target }}

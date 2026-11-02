@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025, fcpp-innovation
+# This file is distributed under the same license as the fcpp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: fcpp 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-02 13:16+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/components/cmake.rst:2 79e3b0e6c391458d9b3aa86e50c79ac4
+msgid "_`CMakeLists Configuration`"
+msgstr "CMakeLists 配置"
+
+#: ../../source/components/cmake.rst:5 95515399fa2046e1937c02c31718919c
+msgid "_`Overview`"
+msgstr "概述"
+
+#: ../../source/components/cmake.rst:7 e179c3ee5143484287911b22face0893
+#, fuzzy
+msgid ""
+"The CMakeLists.txt file is the core build configuration file for the "
+"stereo_vision project, responsible for project building, dependency "
+"management, and module compilation."
+msgstr "CMakeLists.txt 文件是 fcpp 项目的核心构建配置文件，负责项目构建、依赖管理和模块编译。"
+
+#: ../../source/components/cmake.rst:11 17b8f42b29304ce29d44324bfb8e74a6
+msgid "_`Key Features`"
+msgstr "主要特性"
+
+#: ../../source/components/cmake.rst:13 cf5d67ff316e4a1483d80c7f799f171c
+msgid "Project initialization and metadata parsing"
+msgstr "项目初始化与元数据解析"
+
+#: ../../source/components/cmake.rst:14 ea437a251f4c46f897c499408613a174
+msgid "Automatic source file collection and target creation"
+msgstr "自动源文件收集与目标创建"
+
+#: ../../source/components/cmake.rst:15 27d1a66e55a44ab79bac6cb88e26e33d
+msgid "Dependency management and linking"
+msgstr "依赖管理与链接"
+
+#: ../../source/components/cmake.rst:16 4812dd051f7d4ac58adce3ae9292b5bf
+msgid "C++ module support configuration"
+msgstr "C++ 模块支持配置"
+
+#: ../../source/components/cmake.rst:17 ac9a449462d54e809b66aa0f9021b036
+msgid "Installation rule definition"
+msgstr "安装规则定义"
+
+#: ../../source/components/cmake.rst:20 c86c142c2caf45a2936cad7beb142300
+msgid "_`Main Configurations`"
+msgstr "主要配置项"
+
+#: ../../source/components/cmake.rst:22 b687590a7bc740e8adc674eaa47e5847
+msgid ""
+"The CMake configuration automatically reads project information from "
+"metadata.json, collects source files from include and src directories, "
+"creates separate static libraries for C and C++ components, and "
+"configures module support for C++23 and above."
+msgstr ""
+"CMake 配置会自动从 metadata.json 读取项目信息，从 include 和 src 目录收集源文件，为 C 和 C++ "
+"组件分别创建静态库，并配置 C++23 及以上版本的模块支持。"
+
+#: ../../source/components/cmake.rst:26 34eca8f2b4af4c01a65c6c3eeb40c46a
+msgid ""
+"Platform-specific module compilation is handled with appropriate settings"
+" for MSVC (.ixx files) and GCC/Clang (.cppm files). The configuration "
+"also includes installation rules for libraries and headers."
+msgstr ""
+"平台特定的模块编译通过针对 MSVC (.ixx 文件) 和 GCC/Clang (.cppm 文件) "
+"的适当设置进行处理。该配置还包含库和头文件的安装规则。"
+

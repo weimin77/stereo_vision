@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025, fcpp-innovation
+# This file is distributed under the same license as the fcpp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: fcpp 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-02 13:16+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/components/meta.rst:2 0c194d1ee764446eb7e411263beefea8
+msgid "_`Metadata Configuration`"
+msgstr "元数据配置"
+
+#: ../../source/components/meta.rst:5 a746dcbba3a04920ad90cc256effbb80
+msgid "_`Project-level Settings`"
+msgstr "项目级设置"
+
+#: ../../source/components/meta.rst:7 069de3bfa0cf4675bdb74529a9e6de8c
+#, fuzzy
+msgid ""
+"The metadata.json file contains the metadata configuration for the "
+"stereo_vision project, including basic project information, build "
+"configuration, and dependency definitions."
+msgstr "metadata.json 文件包含 fcpp 项目的元数据配置，包括基本项目信息、构建配置和依赖定义。"
+
+#: ../../source/components/meta.rst:11 1a0bfe43ece1433790fc634cf457bc70
+msgid "_`File Structure`"
+msgstr "文件结构"
+
+#: ../../source/components/meta.rst:13 c4cfc3535c4147e68cfbb0397afc26ff
+msgid ""
+"The JSON file includes sections for basic project information (name, "
+"version, license, description), authors and maintainers, build "
+"configuration (CMake version, C/C++ standards), module settings, "
+"dependency definitions, and documentation configuration."
+msgstr ""
+"该 JSON 文件包含基本项目信息（名称、版本、许可证、描述）、作者和维护者、构建配置（CMake 版本、C/C++ "
+"标准）、模块设置、依赖定义以及文档配置等部分。"
+
+#: ../../source/components/meta.rst:18 d1d1bd1ae398442788ec3892aac06f37
+msgid "_`Key Settings`"
+msgstr "关键设置"
+
+#: ../../source/components/meta.rst:20 6bbcd8dc5e564457ac9483cbce05da4d
+msgid ""
+"Basic project information defines the package identity. Build "
+"configuration specifies tool versions and language standards. Module "
+"settings control standard and user module usage. Dependencies are "
+"categorized into common, C-specific, and C++-specific requirements. "
+"Documentation settings configure Doxygen generation."
+msgstr ""
+"基本项目信息定义了包的身份标识。构建配置指定了工具版本和语言标准。模块设置控制标准和用户模块的使用。依赖项被归类为通用、C 专用和 C++ "
+"专用需求。文档设置用于配置 Doxygen 生成。"
+
+#: ../../source/components/meta.rst:24 78f8ec3fac82453cbd1315f8a112390f
+msgid ""
+"Example configuration demonstrates how to set up a project with C++20 "
+"support, module generation, and common dependencies like Boost and "
+"OpenCV."
+msgstr "示例配置展示了如何设置一个支持 C++20、模块生成以及包含 Boost 和 OpenCV 等通用依赖的项目。"
+

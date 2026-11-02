@@ -1,0 +1,64 @@
+{
+  "_comment": [
+    "Example configuration for stereo_vision. Every key is optional.",
+    "Precedence: built-in defaults < top-level keys < profiles[profile].",
+    "Image paths are never configured here: the caller injects them through",
+    "Pipeline::set_input_image()."
+  ],
+
+  "profile": "balanced",
+  "profiles": {
+    "balanced": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "hh", "uniqueness_ratio": 5},
+    "detail": {"block_size": 3, "p1_factor": 8, "p2_factor": 64, "mode": "hh", "uniqueness_ratio": 5},
+    "fast": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "3way", "uniqueness_ratio": 5}
+  },
+
+  "calibration": {
+    "stereo_yml": "stereo.yml",
+    "left_mono_yml": "",
+    "right_mono_yml": ""
+  },
+
+  "rectify": {
+    "enabled": true,
+    "alpha": 0.0,
+    "new_size": [0, 0],
+    "crop_to_common_roi": true,
+    "map_type": "fixed"
+  },
+
+  "camera": {"fx": 500.0, "baseline_m": 0.1},
+  "camera_file": "",
+
+  "working_depth_m": [0.5, 5.0],
+  "min_disparity": 0,
+  "num_disparities": 0,
+  "padding": true,
+
+  "block_size": 5,
+  "p1_factor": 8,
+  "p2_factor": 256,
+  "mode": "hh",
+  "uniqueness_ratio": 5,
+  "pre_filter_cap": 31,
+  "disp12_max_diff": 1,
+  "speckle_window_size": 40,
+  "speckle_range": 1,
+
+  "preprocess": "none",
+  "clahe_clip_limit": 2.0,
+  "clahe_tile_grid": 8,
+
+  "lr_max_diff_px": 1.5,
+
+  "depth": {"min_m": 0.0, "max_m": 0.0},
+
+  "pointcloud": {"encoding": "binary", "keep_invalid": false, "color": true},
+
+  "output": {
+    "directory": "",
+    "prefix": "stereo",
+    "save_rectified": false,
+    "show_window": false
+  }
+}
