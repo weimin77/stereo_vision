@@ -1,0 +1,72 @@
+{
+  "_comment": [
+    "Configuration for the BlenderProc oven scene in resources/oven.",
+    "The pair is left_on.png / right_on.png, 640x480, rendered from the 320x240 rig",
+    "described by camera.json (fx = fy = 140 px, cx = 319.5, cy = 239.5, baseline 60 mm).",
+    "Every key is optional; precedence is defaults < top-level keys < profiles[profile].",
+    "Image paths are never configured here: the caller injects them through",
+    "Pipeline::set_input_image()."
+  ],
+
+  "profile": "balanced",
+  "profiles": {
+    "balanced": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "hh", "uniqueness_ratio": 5},
+    "detail": {"block_size": 3, "p1_factor": 8, "p2_factor": 64, "mode": "hh", "uniqueness_ratio": 5},
+    "fast": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "3way", "uniqueness_ratio": 5}
+  },
+
+  "calibration": {
+    "stereo_yml": "stereo.yml",
+    "left_mono_yml": "left_mono.yml",
+    "right_mono_yml": "right_mono.yml"
+  },
+
+  "rectify": {
+    "_comment": [
+      "The rig is described by R = I and zero distortion, so rectifying an already rectified",
+      "pair is an identity mapping. crop_to_common_roi stays off because the ROI stereoRectify",
+      "derives is one pixel inside the frame, and losing that row and column would stop the",
+      "result from lining up with the scene's own ground-truth maps."
+    ],
+    "enabled": true,
+    "alpha": 0.0,
+    "new_size": [0, 0],
+    "crop_to_common_roi": false,
+    "map_type": "fixed"
+  },
+
+  "camera": {"fx": 140.0, "baseline_m": 0.06},
+  "camera_file": "",
+
+  "working_depth_m": [0.07, 0.25],
+  "min_disparity": 0,
+  "num_disparities": 0,
+  "padding": true,
+
+  "block_size": 5,
+  "p1_factor": 8,
+  "p2_factor": 256,
+  "mode": "hh",
+  "uniqueness_ratio": 5,
+  "pre_filter_cap": 31,
+  "disp12_max_diff": 1,
+  "speckle_window_size": 40,
+  "speckle_range": 1,
+
+  "preprocess": "none",
+  "clahe_clip_limit": 2.0,
+  "clahe_tile_grid": 8,
+
+  "lr_max_diff_px": 1.5,
+
+  "depth": {"min_m": 0.0, "max_m": 0.0},
+
+  "pointcloud": {"encoding": "binary", "keep_invalid": false, "color": true},
+
+  "output": {
+    "directory": "",
+    "prefix": "oven",
+    "save_rectified": false,
+    "show_window": false
+  }
+}

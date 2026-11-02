@@ -1,8 +1,7 @@
-#include <algorithm>
-#include <cstdint>
+#include <cmath>
+#include <filesystem>
 #include <iostream>
 #include <string>
-#include <vector>
 
 #include "sv_config.hpp"
 #include "sv_pipeline.hpp"
@@ -10,106 +9,100 @@
 
 namespace {
 
-constexpr int kWidth = 320;
-constexpr int kHeight = 240;
-constexpr int kShift = 20;
-constexpr int kNumDisparities = 64;
-constexpr std::uint32_t kSeed = 20261102U;
-constexpr std::uint32_t kLcgMultiplier = 1664525U;
-constexpr std::uint32_t kLcgIncrement = 1013904223U;
-constexpr int kLcgShift = 24;
-constexpr int kTextureBlock = 4;
+/// Medians of the scene's disparity_gt_left.npy / depth_gt_left.npy, scaled to the 640x480 pair.
+constexpr double kSceneDisparityP50 = 73.26;
+constexpr double kSceneDepthP50 = 0.1129;
+constexpr double kDisparityTolerance = 3.0;
+constexpr double kDepthTolerance = 0.005;
 
-sv::Image texture(int width, int height) {
-    sv::Image image;
-    image.width = width;
-    image.height = height;
-    image.channels = 1;
-    image.data.resize(static_cast<std::size_t>(width) * height);
+// test_package/conanfile.py copies resources/ next to the build and defines RESOURCES_PATH,
+// so this program never depends on the directory it is started from.
+std::string resource(const std::string& name) { return std::string(RESOURCES_PATH) + "/oven/" + name; }
 
-    const int coarse_width = (width / kTextureBlock) + 1;
-    const int coarse_height = (height / kTextureBlock) + 1;
-    std::vector<std::uint8_t> coarse(static_cast<std::size_t>(coarse_width) * coarse_height);
-    std::uint32_t state = kSeed;
-    for (auto& value : coarse) {
-        state = (state * kLcgMultiplier) + kLcgIncrement;
-        value = static_cast<std::uint8_t>(state >> kLcgShift);
+bool load_config(sv::Config& config) {
+    std::string error;
+    if (!sv::config_load(resource("sgbm_config.json"), config, &error)) {
+        std::cerr << "example: configuration rejected: " << error << '\n';
+        return false;
     }
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            image.data[(static_cast<std::size_t>(y) * width) + x] =
-                coarse[(static_cast<std::size_t>(y / kTextureBlock) * coarse_width) + (x / kTextureBlock)];
-        }
+    for (const std::string& warning : config.warnings) {
+        std::cerr << "example: configuration warning: " << warning << '\n';
     }
-    return image;
+    return true;
 }
 
-sv::Calibration rig() {
-    sv::Calibration calibration;
-    const double focal = 500.0;
-    const double intrinsics[sv::kMatrix3Size] = {focal, 0.0, 160.0, 0.0, focal, 120.0, 0.0, 0.0, 1.0};
-    for (std::size_t i = 0; i < sv::kMatrix3Size; ++i) {
-        calibration.m1[i] = intrinsics[i];
-        calibration.m2[i] = intrinsics[i];
-        calibration.r[i] = (i % 4 == 0) ? 1.0 : 0.0;
+void print_report(const sv::Pipeline& pipeline) {
+    const sv::RunReport& report = pipeline.report();
+    std::cout << "rectified " << report.rectified_width << "x" << report.rectified_height << '\n'
+              << "window    " << report.min_disparity << " + " << report.num_disparities << '\n'
+              << "timing    rectify " << report.rectify_ms << " ms, match " << report.match_ms << " ms, depth "
+              << report.depth_ms << " ms\n"
+              << "valid     " << report.valid_ratio * 100.0 << " %\n"
+              << "disparity p05/p50/p95 " << report.disparity_p05 << " / " << report.disparity_p50 << " / "
+              << report.disparity_p95 << " px\n"
+              << "depth     p05/p50/p95 " << report.depth_p05 << " / " << report.depth_p50 << " / " << report.depth_p95
+              << " m\n";
+}
+
+bool save_artifacts(const sv::Pipeline& pipeline, const std::filesystem::path& out_dir) {
+    std::error_code code;
+    std::filesystem::create_directories(out_dir, code);
+    if (code) {
+        std::cerr << "example: cannot create " << out_dir << ": " << code.message() << '\n';
+        return false;
     }
-    calibration.d1.assign(5, 0.0);
-    calibration.d2.assign(5, 0.0);
-    calibration.t = {-0.1, 0.0, 0.0};
-    calibration.has_extrinsics = true;
-    return calibration;
+
+    const std::filesystem::path disparity = out_dir / "disparity.png";
+    const std::filesystem::path depth = out_dir / "depth.png";
+    const std::filesystem::path cloud = out_dir / "cloud.pcd";
+    if (!pipeline.save_disparity_image(disparity.string()) || !pipeline.save_depth_image(depth.string()) ||
+        !pipeline.save_pointcloud(cloud.string())) {
+        std::cerr << "example: " << pipeline.last_error() << '\n';
+        return false;
+    }
+    std::cout << "saved     " << disparity.filename().string() << ", " << depth.filename().string() << ", "
+              << cloud.filename().string() << " in " << out_dir.string() << '\n';
+    return true;
 }
 
 }  // namespace
 
 int main() {
     sv::Config config = sv::config_default();
-    config.matcher.num_disparities = kNumDisparities;
-    config.matcher.mode = sv::SgbmMode::Sgbm;
-    config.rectify.crop_to_common_roi = false;
-
-    const sv::Image left = texture(kWidth, kHeight);
-    sv::Image right = left;
-    std::fill(right.data.begin(), right.data.end(), 0);
-    for (int y = 0; y < kHeight; ++y) {
-        for (int x = 0; x + kShift < kWidth; ++x) {
-            right.data[(static_cast<std::size_t>(y) * kWidth) + x] =
-                left.data[(static_cast<std::size_t>(y) * kWidth) + x + kShift];
-        }
-    }
-
-    if (!image_valid(left) || !image_valid(right)) {
-        std::cerr << "smoke: synthetic pair is invalid\n";
+    if (!load_config(config)) {
         return 1;
     }
 
     sv::Pipeline pipeline{config};
-    if (!pipeline.set_calibration(rig())) {
-        std::cerr << "smoke: " << pipeline.last_error() << '\n';
+
+    // The calibration is injected by absolute path because the paths written inside
+    // sgbm_config.json are resolved against the process working directory.
+    if (!pipeline.set_calibration_files(resource("stereo.yml"), resource("left_mono.yml"),
+                                        resource("right_mono.yml"))) {
+        std::cerr << "example: " << pipeline.last_error() << '\n';
         return 1;
     }
-    if (!pipeline.set_input_image(left, right)) {
-        std::cerr << "smoke: " << pipeline.last_error() << '\n';
+    if (!pipeline.set_input_image(resource("left_on.png"), resource("right_on.png"))) {
+        std::cerr << "example: " << pipeline.last_error() << '\n';
         return 1;
     }
     if (!pipeline.run()) {
-        std::cerr << "smoke: " << pipeline.last_error() << '\n';
+        std::cerr << "example: " << pipeline.last_error() << '\n';
         return 1;
     }
 
+    print_report(pipeline);
+    std::cout << "cloud     " << pipeline.get_pointcloud().points.size() << " points\n";
+
+    // The pair is the BlenderProc oven scene: 140 px focal length, 60 mm baseline. Its own
+    // ground truth gives a median disparity of 73.26 px, i.e. 0.1129 m in front of the left
+    // camera, so a wrong focal length, baseline or principal point shows up here at once.
     const sv::RunReport& report = pipeline.report();
-    std::cout << "rectified " << report.rectified_width << "x" << report.rectified_height << '\n'
-              << "window    " << report.min_disparity << " + " << report.num_disparities << '\n'
-              << "valid     " << report.valid_ratio << '\n'
-              << "disparity p05/p50/p95 " << report.disparity_p05 << " / " << report.disparity_p50 << " / "
-              << report.disparity_p95 << '\n'
-              << "depth     p05/p50/p95 " << report.depth_p05 << " / " << report.depth_p50 << " / "
-              << report.depth_p95 << '\n'
-              << "cloud     " << pipeline.get_pointcloud().points.size() << " points\n";
-
-    if (!(report.valid_ratio > 0.0)) {
-        std::cerr << "smoke: no valid disparity\n";
+    if (!(report.valid_ratio > 0.5) || std::abs(report.disparity_p50 - kSceneDisparityP50) > kDisparityTolerance ||
+        std::abs(report.depth_p50 - kSceneDepthP50) > kDepthTolerance) {
+        std::cerr << "example: the result is outside the range the scene ground truth allows\n";
         return 1;
     }
-    return 0;
+
+    return save_artifacts(pipeline, "example_output") ? 0 : 1;
 }

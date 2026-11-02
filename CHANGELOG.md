@@ -29,3 +29,5 @@ the entries below are the initial state before the first automated release.
 
 - GTest unit suite covering types, image I/O, calibration, rectification, matching, depth, point
   clouds, configuration and the pipeline facade, plus a repeated-run stress case
+- `test_package/main.cpp` runs the BlenderProc oven scene in `test_package/resources/oven` end to end
+  and checks it against the scene's own disparity and depth ground truth

@@ -12,6 +12,11 @@
  * - run() rectifies, matches and converts to depth. Nothing is written to disk here.
  * - get_* returns references to the cached results; save_* writes them where the caller asks.
  *
+ * @note The package ships a complete pair to try this on: test_package/resources/oven holds the
+ * BlenderProc oven scene, its stereo and per-camera calibrations, and a matching sgbm_config.json.
+ * The calibration paths inside that configuration are relative to the working directory, so run
+ * the example from that folder or pass absolute paths.
+ *
  * @note The point cloud is the expensive artefact, so it is built on the first get_pointcloud()
  * call and cached until the next run().
  */

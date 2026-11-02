@@ -173,6 +173,14 @@ combination), which takes about 5–10 minutes; later runs hit the cache. `metad
 `build_type: Release` because the pinned OpenCV build also is Release — a Debug run would rebuild
 OpenCV and roughly double the wait.
 
+`conan create` also runs `test_package/main.cpp`, which is a complete example rather than a stub: it
+loads the BlenderProc oven scene shipped in `test_package/resources/oven/` (a 640×480 pair, its
+calibration as `stereo.yml` plus per-camera `left_mono.yml`/`right_mono.yml`, and
+`sgbm_config.json`), rectifies, matches, and prints the report before writing
+`disparity.png`, `depth.png` and `cloud.pcd` into `example_output/` next to the binary. The
+scene's own ground truth puts the median disparity at 73.26 px and the median depth at
+0.1129 m, so the program exits non-zero when the result drifts away from that.
+
 cross-build to host device (assume toolchain and profile are ready):
 
 ```bash
@@ -299,7 +307,7 @@ project-root/
 │   └── images/               # Static images for doxygen/sphinx system
 └── test_package/             # Test project
     ├── export/               # Log for testing results
-    ├── resources/            # Test resources (stereo.yml, mono yml, sgbm_config.json)
+    ├── resources/            # Test resources: unit fixtures plus the oven/ example dataset
     ├── test/
     │   ├── unit/             # Standing unit tests (coverage target)
     │   ├── stress/           # GTest stress / performance tests
