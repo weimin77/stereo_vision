@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fcpp 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 17:56+0800\n"
+"POT-Creation-Date: 2026-11-03 14:07+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_CN\n"
@@ -19,11 +19,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../source/export.rst:2 192da78fc1c346b0bc89a9da21b3e3e9
+#: ../../source/export.rst:2 f3658076d8774feb8b724290c66f244c
 msgid "_`Full demonstration of specific lib`"
 msgstr ""
 
-#: ../../source/export.rst:4 485d5ce5ccc94b049accc2c743a63888
+#: ../../source/export.rst:4 e7f7b9e71407476fa15189d9a1c3a7bf
 msgid ""
 "Brief overview: the library :code:`stereo_vision` turns a calibrated "
 "stereo pair into a disparity map, a depth map and a point cloud. The "
@@ -31,11 +31,11 @@ msgid ""
 "depth to point cloud."
 msgstr ""
 
-#: ../../source/export.rst:9 42e2c977e5d14a45b53ae67d2c3b207d
+#: ../../source/export.rst:9 f78b9192e88a4c6bbea476d67810244e
 msgid "_`Theories or introduction`"
 msgstr ""
 
-#: ../../source/export.rst:11 014aaa0b4ff3428ebda52c648b303132
+#: ../../source/export.rst:11 0bd3914ff19740f4b54bccbc0a52959e
 msgid ""
 "A rectified stereo pair observes one scene point from two positions. Once"
 " the epipolar lines are horizontal, the horizontal coordinate difference "
@@ -43,13 +43,13 @@ msgid ""
 "rectified geometry:"
 msgstr ""
 
-#: ../../source/export.rst:15 8c206b1bb67a47b6bb6ef9dd3d3bb880
+#: ../../source/export.rst:15 35447d907d344f348c3399bd2516895b
 msgid ""
 "Z = \\frac{f_x \\, |T_x|}{d - d_{offs}}, \\qquad d_{offs} = c_{x1} - "
 "c_{x2}"
 msgstr ""
 
-#: ../../source/export.rst:20 f1c951a49b5f4f9ba59e65d78a8ea975
+#: ../../source/export.rst:20 1b54bb1ac3f440e1884aa6e3516ee5bf
 #, python-brace-format
 msgid ""
 ":math:`f_x` is the rectified focal length, :math:`T_x` the baseline "
@@ -59,7 +59,7 @@ msgid ""
 "paid when neighbouring pixels take different labels:"
 msgstr ""
 
-#: ../../source/export.rst:25 a2d71e16d28b493089a8dd0bd360368e
+#: ../../source/export.rst:25 932c05bcc0d948978337e253b818d381
 msgid ""
 "E(D) = \\sum_p C(p, D_p) + \\sum_{q \\in \\mathcal{N}_p} P_1 \\, "
 "\\delta(\\lvert D_p - D_q \\rvert = 1)\n"
@@ -67,7 +67,7 @@ msgid ""
 "\\rvert > 1)"
 msgstr ""
 
-#: ../../source/export.rst:30 ba2cc0f056c6440bb6ab81ed0411d0bb
+#: ../../source/export.rst:30 7dc5995c11a7464fb7e83886c5824fc7
 #, python-brace-format
 msgid ""
 "The energy is minimised along several scanline directions and the per-"
@@ -77,13 +77,13 @@ msgid ""
 ":math:`P_2 = p_2^{factor} b^2`."
 msgstr ""
 
-#: ../../source/export.rst:35 d058bfb0fd28462eabd3046997f3461f
+#: ../../source/export.rst:35 601ad4eed2d84f8cb4635c63b7e63879
 msgid ""
 "Three details make the difference between a usable result and a "
 "plausible-looking one:"
 msgstr ""
 
-#: ../../source/export.rst:37 c45610f6c27d457e896adfe5bd850d43
+#: ../../source/export.rst:37 55ca075c0962426081da1e2f5e6a1f6f
 #, python-brace-format
 msgid ""
 ":math:`d_{offs}` is generally not zero. Dropping it shifts the whole "
@@ -91,26 +91,26 @@ msgid ""
 "themselves stay correct."
 msgstr ""
 
-#: ../../source/export.rst:39 e410775711c14fd18864f64c090844df
+#: ../../source/export.rst:39 65f57f81e4aa46c181f09cb10f1e6f96
 msgid ""
 "Cropping to the common valid region translates the origin, so ``Q``'s "
 "fourth column and the principal points of ``P1``/``P2`` must move with "
 "it."
 msgstr ""
 
-#: ../../source/export.rst:41 cb1297f5773849988e60a832fb310040
+#: ../../source/export.rst:41 ecdbbc457ad64073a4da9f71756a6b80
 msgid ""
 "Remapping a white image through the same maps marks the pixels that "
 "really carry data. Without that mask, the matcher reads the black border "
 "as scene content and invents disparity there."
 msgstr ""
 
-#: ../../source/export.rst:45 276b099f2b29498dad397d3a531d6df4
+#: ../../source/export.rst:45 dec0a69d2c9b449d8f7f30919b291c5d
 #, fuzzy
 msgid "_`Usage demonstration`"
 msgstr "使用演示"
 
-#: ../../source/export.rst:47 d62ac4875fe140a4a7e5c882112e548a
+#: ../../source/export.rst:47 80481f6c92d544c7b015cf792d4a3a60
 msgid ""
 "The pipeline is a facade: images enter through ``set_input_image``, "
 "parameters through ``Config``, and every artefact leaves through an "
@@ -118,93 +118,93 @@ msgid ""
 "inspect the result before deciding which files to produce."
 msgstr ""
 
-#: ../../source/export.rst:51 a0db4aeac8b04beeb61e5fc88883d1a8
+#: ../../source/export.rst:51 23ec6656975f4e36a1ea8fdde8314604
 msgid "stereo pipeline"
 msgstr ""
 
-#: ../../source/export.rst:82 2ab20dea82004398b749d16bfa24c981
+#: ../../source/export.rst:82 3510b8a3bb9b4636a956ebc8359e712c
 msgid "_`Applying results`"
 msgstr ""
 
-#: ../../source/export.rst:84 baf4aec745884b6d8119e0c098e8298e
+#: ../../source/export.rst:84 e52e83a9d10e49318145abeb746832f2
 msgid "Five artefacts come out of a run, and each has its own consumer:"
 msgstr ""
 
-#: ../../source/export.rst:90 72ce055419774864a1464f696430e0bb
+#: ../../source/export.rst:90 25bae2af02de440e970a308e19b9658d
 msgid "Artefact"
 msgstr ""
 
-#: ../../source/export.rst:91 34d48f04a41b4b12959e9b49f64cc23f
+#: ../../source/export.rst:91 95e10304739f4071a01085aec3b5ad93
 msgid "Form"
 msgstr ""
 
-#: ../../source/export.rst:92 72bef64d77f3448080a9b6a9c5f07d24
+#: ../../source/export.rst:92 4c73783d12bd45ad87dda7847b79f6d3
 msgid "Typical use"
 msgstr ""
 
-#: ../../source/export.rst:93 b18d01aa11634d9db98b1435b4b96710
+#: ../../source/export.rst:93 a70ec0fcad2d4efa8394c8df34c9ade4
 msgid "Disparity map"
 msgstr ""
 
-#: ../../source/export.rst:94 a46ec108d07344f487dc1e5c01aed1a0
+#: ../../source/export.rst:94 979cd205462348f4a56fb998a4bff9af
 msgid "``float`` px, NaN invalid; png is 1/16 px fixed point"
 msgstr ""
 
-#: ../../source/export.rst:95 9dcd4cf4219c4efb8a63c77abbb243cf
+#: ../../source/export.rst:95 2341c44c68f042ae92d5b632636faf68
 msgid "Quality inspection, comparison against a matcher baseline"
 msgstr ""
 
-#: ../../source/export.rst:96 c535b999caf548caa299aa9dec9c2f91
+#: ../../source/export.rst:96 a9203a7832eb475e8175e919965794ee
 msgid "Depth map"
 msgstr ""
 
-#: ../../source/export.rst:97 1af640829bbf429f8490b409f3b5423f
+#: ../../source/export.rst:97 5e03208024a943f98352dba7d5d33282
 msgid "``float`` m, NaN invalid; png is millimetres"
 msgstr ""
 
-#: ../../source/export.rst:98 8a425b573b8a484993599830ad743d78
+#: ../../source/export.rst:98 16715be97a764f85a92e3244b8e48b16
 msgid "Metric measurement, depth gating, near/far clipping"
 msgstr ""
 
-#: ../../source/export.rst:99 f3e9a559b6b241329d3451af569c584e
+#: ../../source/export.rst:99 d556638cd93a4d279907ad3e3b97668e
 msgid "Colourised disparity / depth"
 msgstr ""
 
-#: ../../source/export.rst:100 4e78cc384e494d178865d48ec4998a97
+#: ../../source/export.rst:100 9c80632e1eed4101b3470447a6eac7dd
 msgid "8-bit BGR png, jpg or bmp; ``colorize = true``"
 msgstr ""
 
-#: ../../source/export.rst:101 ba69c9cb1dda4d3a894bba1070dcc1be
+#: ../../source/export.rst:101 ef218aa554e54de9935cf039f25e3d25
 msgid ""
 "Opening the result in a viewer; the same ramp for both maps, so near is "
 "warm in each"
 msgstr ""
 
-#: ../../source/export.rst:102 2c84a56b21bd4c40bc38ea4bc9dba009
+#: ../../source/export.rst:102 d693d86e00ff4259b1cc85e79b3e5d89
 msgid "Point cloud"
 msgstr ""
 
-#: ../../source/export.rst:103 83cb947e1b7d4419a15a492d3f984a98
+#: ../../source/export.rst:103 4e10e7c180b749ff8460927ba3f29b4e
 msgid "PCD or PLY, ``x y z`` only"
 msgstr ""
 
-#: ../../source/export.rst:104 e428aac75b5849ac8204c2574a46c2c7
+#: ../../source/export.rst:104 2b6e94ced01c49f0933817e454071190
 msgid "Registration, plane/box fitting, bin picking"
 msgstr ""
 
-#: ../../source/export.rst:105 c65986b9c4324f40bf60c0db8d8e4ffa
+#: ../../source/export.rst:105 41f7b07e1e0a448db4cbd11aa8d25327
 msgid "Validity mask"
 msgstr ""
 
-#: ../../source/export.rst:106 dea952c472ac4fa09af7308543d796c5
+#: ../../source/export.rst:106 4f6f2a43b9bd444a9850c2ab7b194c39
 msgid "``uint8``, 255 usable"
 msgstr ""
 
-#: ../../source/export.rst:107 f38431719940484f81a31e0bb8e55383
+#: ../../source/export.rst:107 1e54e29c0cef4019975da813cb710643
 msgid "Excluding border and occluded pixels from downstream statistics"
 msgstr ""
 
-#: ../../source/export.rst:109 ae0d12c64f644ffca1afb7242d9bf520
+#: ../../source/export.rst:109 dba4252ce027410cb280cb8d4b775087
 msgid ""
 "A 16-bit fixed-point or millimetre sample is the right thing to measure "
 "and the wrong thing to look at: most viewers render it as a near-black "
@@ -217,7 +217,7 @@ msgid ""
 "rejected rather than silently writing something else."
 msgstr ""
 
-#: ../../source/export.rst:117 ca19775cbd614ab897948d055b17edf0
+#: ../../source/export.rst:117 396bc4c1b2a841de9b93530b745d227e
 msgid ""
 "The point cloud is expressed in the rectified left camera frame: x right,"
 " y down, z forward, in metres. It carries geometry only — three fields "
@@ -229,11 +229,11 @@ msgid ""
 "all of which the run report records."
 msgstr ""
 
-#: ../../source/export.rst:125 93a0c03743974923a0a4abc63596c762
+#: ../../source/export.rst:125 d8f70f4b54624f29af5c4345ef1eeafa
 msgid "_`Why the matcher runs twice`"
 msgstr ""
 
-#: ../../source/export.rst:127 0b555271ef20405396aca6a969429f14
+#: ../../source/export.rst:127 bebe02a5ffc140a4a2fefc55d8319c0c
 msgid ""
 "``sgbm_compute()`` searches left-to-right and then right-to-left, and "
 "keeps a left pixel only when the two estimates agree within "
@@ -244,7 +244,7 @@ msgid ""
 "guess about a region the right image cannot confirm."
 msgstr ""
 
-#: ../../source/export.rst:133 20e8c9729420441f8a2f8a6b6edaf0ca
+#: ../../source/export.rst:133 4351810d2657433c95bba0061799b213
 msgid ""
 "Dropping the check is tempting because it raises the number of valid "
 "pixels, and because the median disparity moves *towards* the ground truth"
@@ -253,83 +253,83 @@ msgid ""
 "map:"
 msgstr ""
 
-#: ../../source/export.rst:137 afb3b26d619944348a5ac93c9d9aebc7
+#: ../../source/export.rst:137 0e7210b71aee4baf96e61968298ae80c
 msgid "effect of the left-right consistency check"
 msgstr ""
 
-#: ../../source/export.rst:141 9c4346bfc366492a92754fcebf611552
+#: ../../source/export.rst:141 6415f3828e8a4edcb0e0cc52c1c83d85
 msgid "metric"
 msgstr ""
 
-#: ../../source/export.rst:141 b5e7013c4ec7451489b79a87d4517957
+#: ../../source/export.rst:141 215c5ed531a6434fbae8e8a786c864ff
 msgid "with the check"
 msgstr ""
 
-#: ../../source/export.rst:141 d1215891038b4db088b63e8cf6909723
+#: ../../source/export.rst:141 e13e024bad4340978aeec2fc4854680c
 msgid "single pass"
 msgstr ""
 
-#: ../../source/export.rst:143 c0137f4935d54d989ce99554089c9a87
+#: ../../source/export.rst:143 676209dd6c444216a519592ee775ed98
 msgid "pixels kept"
 msgstr ""
 
-#: ../../source/export.rst:143 1a9883d0b004434ab513194c65953fc6
+#: ../../source/export.rst:143 7a1f54366a6e4cb4835f93fc2d0b6533
 msgid "147707"
 msgstr ""
 
-#: ../../source/export.rst:143 e13abe29a9b44f7e8989f9f281379611
+#: ../../source/export.rst:143 3f043dbc5d664c8987f4e51efd96ec10
 msgid "181029"
 msgstr ""
 
-#: ../../source/export.rst:144 faeaab7b492a4394ad8f8eea96a9fcd3
+#: ../../source/export.rst:144 8c93292e1edb46c182e605d193431e97
 msgid "median error"
 msgstr ""
 
-#: ../../source/export.rst:144 ef493f076d674dce87922e8c9c64935a
+#: ../../source/export.rst:144 d0a950ae4db74639b9e5668aeb551d87
 msgid "0.298 px"
 msgstr ""
 
-#: ../../source/export.rst:144 faedcb6ee3084a04b8d241c927846325
+#: ../../source/export.rst:144 4f9d568c2bd0408890f0291ae50fdac6
 msgid "0.375 px"
 msgstr ""
 
-#: ../../source/export.rst:145 1b9f2747ca454cbab8144d44c8bd824d
+#: ../../source/export.rst:145 e03986b5e1664c86b38d6f86403e5dd9
 msgid "error beyond 2 px"
 msgstr ""
 
-#: ../../source/export.rst:145 255f13d479934a55b9d608b8dfcb1b2f
+#: ../../source/export.rst:145 3d2275e3c01f4e39bcf31a8de8e81a4e
 msgid "10.6 %"
 msgstr ""
 
-#: ../../source/export.rst:145 955d180ba8b749468437336465e7958a
+#: ../../source/export.rst:145 fe25662a2f094b04a2270f78a2d53b99
 msgid "19.7 %"
 msgstr ""
 
-#: ../../source/export.rst:146 b3eefd93da1e474d8d67531248c15acc
+#: ../../source/export.rst:146 4e0fa22392f446448691a6a50e0bab0a
 msgid "error beyond 5 px"
 msgstr ""
 
-#: ../../source/export.rst:146 fe0dad2a48554716bd2a3a60e7cb7328
+#: ../../source/export.rst:146 cae772f108bc405793c82ec550f13ad8
 msgid "8.2 %"
 msgstr ""
 
-#: ../../source/export.rst:146 efe334cd126e46328c7dfaa2e4477123
+#: ../../source/export.rst:146 86156edbf7c344fb83369a32370ba8db
 msgid "15.4 %"
 msgstr ""
 
-#: ../../source/export.rst:147 03e4e94dfbc94ba7b363728d18eafd5f
+#: ../../source/export.rst:147 36afa1b9bcf64d929152a41b34e7a095
 msgid "90th percentile error"
 msgstr ""
 
-#: ../../source/export.rst:147 3d7053dd4b50431c905def01a2cc18f8
+#: ../../source/export.rst:147 fc42ff2db03d4817be55eb9acc5758e2
 msgid "2.44 px"
 msgstr ""
 
-#: ../../source/export.rst:147 1657e2dc4451446cacaea84a0cc56135
+#: ../../source/export.rst:147 a99e66dc85ac462ebcc6fd6e507e1bf5
 msgid "11.19 px"
 msgstr ""
 
-#: ../../source/export.rst:150 34974f46e1f846dda9a4fd19fe154d76
+#: ../../source/export.rst:150 cbb3c97946194806a806b43bb89dfff6
 #, python-format
 msgid ""
 "The 33322 pixels the check removes are not a random sample: their median "
@@ -339,125 +339,125 @@ msgid ""
 "median, dominated by the pixels both variants get right, barely moves."
 msgstr ""
 
-#: ../../source/export.rst:156 73f71f8c46364f698c3c193f6c5f330f
+#: ../../source/export.rst:156 d55f6559d1ce45d399096d1d6166c869
 msgid "_`Algorithm benchmark from test frame`"
 msgstr ""
 
-#: ../../source/export.rst:158 2a7c7e6dd37c4bda9d2b66a558c02767
+#: ../../source/export.rst:158 bc2860747caa47ad8420a7a4552ba3c2
 msgid ""
 "Measured on the BlenderProc oven scene shipped in "
 "``test_package/resources``: a 640x480 pair, ``fx = fy = 140 px``, "
-"``baseline = 0.06 m``, window ``32 + 96``, ``profile = \"minimal\"`` "
-"(``MODE_SGBM``, five directions). Single frame, Release build, one "
+"``baseline = 0.06 m``, window ``32 + 96``, ``profile = \"fast\"`` "
+"(``MODE_SGBM_3WAY``, three directions). Single frame, Release build, one "
 "representative run — timings on a shared machine move by tens of percent,"
 " the agreement columns do not:"
 msgstr ""
 
-#: ../../source/export.rst:163 2cefe6594d6948dbaf17b3ffdc75b201
+#: ../../source/export.rst:163 3dcfea3853684cca8b3639243b63bd93
 msgid "single-frame cost and agreement"
 msgstr ""
 
-#: ../../source/export.rst:168 4c66c11a97c34af3a419f413be0d1f4e
+#: ../../source/export.rst:168 34f4cae1615d4279a7d2b2525ddaaa05
 msgid "phase"
 msgstr ""
 
-#: ../../source/export.rst:168 d78036dfcc3c45b3bf0d74caf29ae58d
+#: ../../source/export.rst:168 609318efd1584285bc8246d9ed04c1f4
 msgid "time"
 msgstr ""
 
-#: ../../source/export.rst:168 507976c90f464d44b283e37197fa7809
+#: ../../source/export.rst:168 5cba465dede6406684a7632c0047c3ed
 msgid "result"
 msgstr ""
 
-#: ../../source/export.rst:170 cdd9bc0790d44a5cb8812379505d507a
+#: ../../source/export.rst:170 1f6b90e431014833a7b63bcfbcc987f3
 msgid "load"
 msgstr ""
 
-#: ../../source/export.rst:170 815a16f96fa445548ba1d2c948ecc8f9
-msgid "15.1 ms"
+#: ../../source/export.rst:170 32bc1741c0394f4091ca25ddd26389ab
+msgid "14.8 ms"
 msgstr ""
 
-#: ../../source/export.rst:170 68da463312964a2faf9bce3e4229eda8
+#: ../../source/export.rst:170 151f343d94514d03b2ddbdf36cae71a4
 msgid "config, calibration and both images"
 msgstr ""
 
-#: ../../source/export.rst:171 5f1336d57dd742839156876ffdde3746
+#: ../../source/export.rst:171 e0296fa1a6fe40cb9fc11476092fa73e
 msgid "run"
 msgstr ""
 
-#: ../../source/export.rst:171 8bab09d15e6f4f30a9808d35976974d9
-msgid "192.4 ms"
+#: ../../source/export.rst:171 cf858a2f49234ef0b747e03f13c00fe7
+msgid "58.6 ms"
 msgstr ""
 
-#: ../../source/export.rst:171 1377b4990e9245848c328fc1c4b9c732
-msgid "of which rectify 5.1 + match 178.0 + depth 0.4"
+#: ../../source/export.rst:171 3aec33de3802442090794e74e5cfce12
+msgid "of which rectify 5.7 + match 44.2 + depth 0.4"
 msgstr ""
 
-#: ../../source/export.rst:172 aa56e3a5fe184e2088a9fb4c673f71b6
+#: ../../source/export.rst:172 441a24ff05d841ae847199361bf8691b
 msgid "write"
 msgstr ""
 
-#: ../../source/export.rst:172 dc3a573e8fee45c9966ea251406da348
-msgid "38.9 ms"
+#: ../../source/export.rst:172 dc55aeff2f1049278f87e89de47e304a
+msgid "38.3 ms"
 msgstr ""
 
-#: ../../source/export.rst:172 e253597f6995418f99a5f2edd7e36176
+#: ../../source/export.rst:172 50846357dd29448da6b6731cd0b03186
 msgid "five artefacts, ``cloud.pcd`` is 2.7 MB"
 msgstr ""
 
-#: ../../source/export.rst:173 a2940022d84b4ba98740e4c3ec4289f8
+#: ../../source/export.rst:173 bad9665449ca48c5bd8ae52c8c0e15a7
 msgid "total"
 msgstr ""
 
-#: ../../source/export.rst:173 63479cad907d490faca2386d9f26b9d9
-msgid "246.5 ms"
+#: ../../source/export.rst:173 da83e0a0acea441992fd0e6cbf43d84b
+msgid "111.7 ms"
 msgstr ""
 
-#: ../../source/export.rst:173 b738e87356d34abe803fb0b3fa1b0448
-msgid "peak resident 33.7 MB"
+#: ../../source/export.rst:173 96dece09257c4a03bbc85dbcad7c102e
+msgid "peak resident 37.9 MB"
 msgstr ""
 
-#: ../../source/export.rst:175 2817243a0eea4d2c9d718eb20298841b
+#: ../../source/export.rst:175 b2308d92bf604758b2e029449e76b80a
 msgid "coverage"
 msgstr ""
 
 #: ../../source/export.rst:175 ../../source/export.rst:176
 #: ../../source/export.rst:177 ../../source/export.rst:178
-#: 90b35300261943d38308cea9c31f93b8 9b38fd51dd2346afb25f91934d97990d
-#: 9fab7e2037e34e1ca0cf6c73f5383eaa a35979aaebbb485492fcacb6f71c90a5
+#: 014861b488344388850d6758fcca7c1d 6d0b53e4eb8848d7be06e88e2fedae58
+#: b3af823ca4a6483fa5eb545d6b55d92b dd0b21c9e2f6440f9ba60f4557ca2868
 msgid "—"
 msgstr ""
 
-#: ../../source/export.rst:175 8fe79d8f0f624bebb112f2712825541e
-msgid "``72.4 %`` of pixels valid"
+#: ../../source/export.rst:175 b8cdcd8d01cf4fcb9c9fb779ba04258b
+msgid "``74.8 %`` of pixels valid"
 msgstr ""
 
-#: ../../source/export.rst:176 ../../source/export.rst:195
-#: 7dd73c82a6904b359ac631c65f9d54e5 93fef31cdc8d48d0b6952fbba35fd291
+#: ../../source/export.rst:176 ../../source/export.rst:198
+#: 57a2474df52f4afa95b3b17338efef4a ec5825765cab47cfa623b335e98704e0
 msgid "disparity p50"
 msgstr ""
 
-#: ../../source/export.rst:176 f8818aef60264e1a9c6fcfda6448a5db
-msgid "``74.13 px`` against ``73.26 px`` in the ground truth"
+#: ../../source/export.rst:176 62ded60ba29945fd94f7f20ad3cbe325
+msgid "``74.44 px`` against ``73.26 px`` in the ground truth"
 msgstr ""
 
-#: ../../source/export.rst:177 f530844bd16b4a32ae56162f1e97301a
+#: ../../source/export.rst:177 ce01156765994b0f9b28ef1e8cc64ebd
 msgid "depth p50"
 msgstr ""
 
-#: ../../source/export.rst:177 94f7c474a0c548f9972ba9704c1a5032
-msgid "``0.1133 m`` against ``0.1129 m`` in the ground truth"
+#: ../../source/export.rst:177 7f9e1040b8f049dbafa428b0c551e78b
+msgid "``0.1129 m`` against ``0.1129 m`` in the ground truth"
 msgstr ""
 
-#: ../../source/export.rst:178 adab563095774233b84534d9a2338612
+#: ../../source/export.rst:178 f5296daff95445d5a1deef2d94543f46
 msgid "point cloud"
 msgstr ""
 
-#: ../../source/export.rst:178 58f58985b0174d01a4be465c7191fd92
-msgid "``222404`` points"
+#: ../../source/export.rst:178 9c1a1c18f0354616b045b949dca9e3c5
+msgid "``229653`` points"
 msgstr ""
 
-#: ../../source/export.rst:181 aafc18354f2d4865947aeffe7447a980
+#: ../../source/export.rst:181 05717b4e174f4d169aeb1f56cfd352e2
 msgid ""
 "``run`` is larger than the sum of its three stages because the stage "
 "timers stop at the conversion to depth; the validity histogram and the "
@@ -465,113 +465,116 @@ msgid ""
 "but belong to no stage."
 msgstr ""
 
-#: ../../source/export.rst:185 e6217574a5f640b1923139b08b35ad94
+#: ../../source/export.rst:185 4d0658ddb7a940868c93116adfc574b1
 msgid ""
-"The search mode is the one parameter that changes memory by an order of "
-"magnitude, because the eight-direction sweep (``MODE_HH``) keeps a full "
-"``width x height x numDisparities`` cost volume while the others keep a "
-"single row. ``minimal`` is the cheapest in memory, not the fastest: "
-"``fast`` gives up 4 MB to run 3.7 times sooner, and finds 2.4 percentage "
-"points more valid pixels along the way."
+"The search mode is the one parameter that moves both time and memory by a"
+" factor, and it moves them in opposite directions. ``fast`` wins on time "
+"because OpenCV parallelises ``MODE_SGBM_3WAY`` over stripes while its "
+"five-direction ``MODE_SGBM`` path barely scales past one core: on four "
+"cores the two differ by 3.9x, and ``fast`` also finds 2.4 percentage "
+"points more valid pixels for 5.1 MB more peak memory. The eight-direction"
+" sweep is the expensive one — it keeps a full ``width x height x "
+"numDisparities`` cost volume, which is 125 MB more and seven times the "
+"time, for a disparity median that moves by half a pixel."
 msgstr ""
 
-#: ../../source/export.rst:190 b587d2d6502a469caf448a5f3dbf8bdb
+#: ../../source/export.rst:193 8a627f25b9e34e5ba0b8a7d3d84dd05f
 msgid "search mode trade-off on the same pair"
 msgstr ""
 
-#: ../../source/export.rst:195 b30aa097a8e14b96bc151b86e178817c
+#: ../../source/export.rst:198 876560b04caf4e508f40667bf9f8fcea
 msgid "profile"
 msgstr ""
 
-#: ../../source/export.rst:195 aa1cca636fc8473e901e479cdb01f8ae
+#: ../../source/export.rst:198 f5129baf422b42d8a1c1ccac593e3166
 msgid "mode"
 msgstr ""
 
-#: ../../source/export.rst:195 4b4ef9e3ad68408894fc52ba98fb0bb4
+#: ../../source/export.rst:198 a4cd3668fd324944a51af38a633a8aed
 msgid "peak RSS"
 msgstr ""
 
-#: ../../source/export.rst:195 167df8bc55a749a89158b0b7128baed1
+#: ../../source/export.rst:198 46eebe4e730940c69626ab996cda2250
 msgid "match"
 msgstr ""
 
-#: ../../source/export.rst:195 46b75e34d65e4427a1a1443cd3f98a13
+#: ../../source/export.rst:198 d0bcf3922dbb4935a0bf28a81c2afdb4
 msgid "valid"
 msgstr ""
 
-#: ../../source/export.rst:197 2e8ee418e0954b989c9268d278931214
+#: ../../source/export.rst:200 5831651c81b24ebb80ef285fc82e94be
 msgid "minimal"
 msgstr ""
 
-#: ../../source/export.rst:197 0ed457b4140e4b63a0cca8df73ca6391
+#: ../../source/export.rst:200 909cf9cb7eb140399831941c00e6ea65
 msgid "``sgbm``"
 msgstr ""
 
-#: ../../source/export.rst:197 e2d306ebc5274d4983ab8d6fbcf29c27
-msgid "33.7 MB"
+#: ../../source/export.rst:200 344ade4476334a22b52ca957c06a4df8
+msgid "32.8 MB"
 msgstr ""
 
-#: ../../source/export.rst:197 61346ed2c93d4f5992b09923bb29a8da
-msgid "178.0 ms"
+#: ../../source/export.rst:200 2d6ce14f26b243a895679ac3bab95421
+msgid "173.0 ms"
 msgstr ""
 
-#: ../../source/export.rst:197 869bb261eaa344c28d40bc9d0c446935
+#: ../../source/export.rst:200 f1e85f2b7f6841f6bbee0e988387a624
 msgid "72.4 %"
 msgstr ""
 
-#: ../../source/export.rst:197 487d100b993442e2bc848fe72efcae20
+#: ../../source/export.rst:200 bc5b0127edf142f8acdaf41034c6007f
 msgid "``74.13 px``"
 msgstr ""
 
-#: ../../source/export.rst:198 f3e313a15c96446f90eeefa685bbd442
+#: ../../source/export.rst:201 9359f862d5f14596b144f1b6c712954e
 msgid "fast"
 msgstr ""
 
-#: ../../source/export.rst:198 7cc16f02305d403d9be89469fe511275
+#: ../../source/export.rst:201 db03805b44964bce863113638b6c83e3
 msgid "``3way``"
 msgstr ""
 
-#: ../../source/export.rst:198 9a69bf6ca4d74abfac2d7e496d8acaa4
-msgid "37.8 MB"
+#: ../../source/export.rst:201 aa51415bb3334592b6f475aff74c521a
+msgid "37.9 MB"
 msgstr ""
 
-#: ../../source/export.rst:198 0fd4e2e9cb974dbeafeb43f18fe26de7
-msgid "48.5 ms"
+#: ../../source/export.rst:201 6ea57896f64c42e480357d638723ca6c
+msgid "44.2 ms"
 msgstr ""
 
-#: ../../source/export.rst:198 97b2bcf74106485699a67bf1f63c1d64
+#: ../../source/export.rst:201 005bcea3edae47938fefdf4ff931a7f2
 msgid "74.8 %"
 msgstr ""
 
-#: ../../source/export.rst:198 cb2c9ea12f5d4502bab15c8ce0704733
+#: ../../source/export.rst:201 992696596c734ea4a90a77a87cfaeb94
 msgid "``74.44 px``"
 msgstr ""
 
-#: ../../source/export.rst:199 e654ef85b391412c80d64289da669bbb
+#: ../../source/export.rst:202 816202ba51cb4c15ae023772b339f85c
 msgid "balanced"
 msgstr ""
 
-#: ../../source/export.rst:199 b77d89def0e74d28b74b22fd28005c94
+#: ../../source/export.rst:202 277ef6a2996b4c65a6a960ba78fb0e48
 msgid "``hh``"
 msgstr ""
 
-#: ../../source/export.rst:199 5ae3d0e261c74532841681198f312816
+#: ../../source/export.rst:202 b6b207813e6143adb78f1718fba765d2
 msgid "162.8 MB"
 msgstr ""
 
-#: ../../source/export.rst:199 56e44254607e4b5d975afc6da0ad8add
-msgid "316.5 ms"
+#: ../../source/export.rst:202 c426c9bf16e541d79c09c2a27b3429c3
+msgid "316.4 ms"
 msgstr ""
 
-#: ../../source/export.rst:199 7d069c2278cb460ab588aae10123ad20
+#: ../../source/export.rst:202 7863806f8efa46518e6615997e37a98c
 msgid "74.9 %"
 msgstr ""
 
-#: ../../source/export.rst:199 601656e7eecb46669d7ce690ae699685
+#: ../../source/export.rst:202 463d9cb6c01e414e818e8569c113a491
 msgid "``74.94 px``"
 msgstr ""
 
-#: ../../source/export.rst:202 b3895f3ccb9f4e34a8c2cf58a08de191
+#: ../../source/export.rst:205 33b73bbff2d040b6bcf8ff99bb951151
 #, python-format
 msgid "Suite level: 65 GTest cases, 82.1 % line coverage."
 msgstr ""
@@ -1229,5 +1232,78 @@ msgstr ""
 #~ "representative run — timings on a "
 #~ "shared machine move by tens of "
 #~ "percent, the agreement columns do not:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Measured on the BlenderProc oven scene"
+#~ " shipped in ``test_package/resources``: a "
+#~ "640x480 pair, ``fx = fy = 140 "
+#~ "px``, ``baseline = 0.06 m``, window "
+#~ "``32 + 96``, ``profile = \"minimal\"``"
+#~ " (``MODE_SGBM``, five directions). Single "
+#~ "frame, Release build, one representative "
+#~ "run — timings on a shared machine"
+#~ " move by tens of percent, the "
+#~ "agreement columns do not:"
+#~ msgstr ""
+
+#~ msgid "15.1 ms"
+#~ msgstr ""
+
+#~ msgid "192.4 ms"
+#~ msgstr ""
+
+#~ msgid "of which rectify 5.1 + match 178.0 + depth 0.4"
+#~ msgstr ""
+
+#~ msgid "38.9 ms"
+#~ msgstr ""
+
+#~ msgid "246.5 ms"
+#~ msgstr ""
+
+#~ msgid "peak resident 33.7 MB"
+#~ msgstr ""
+
+#~ msgid "``72.4 %`` of pixels valid"
+#~ msgstr ""
+
+#~ msgid "``74.13 px`` against ``73.26 px`` in the ground truth"
+#~ msgstr ""
+
+#~ msgid "``0.1133 m`` against ``0.1129 m`` in the ground truth"
+#~ msgstr ""
+
+#~ msgid "``222404`` points"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The search mode is the one "
+#~ "parameter that changes memory by an "
+#~ "order of magnitude, because the "
+#~ "eight-direction sweep (``MODE_HH``) keeps a"
+#~ " full ``width x height x "
+#~ "numDisparities`` cost volume while the "
+#~ "others keep a single row. ``minimal``"
+#~ " is the cheapest in memory, not "
+#~ "the fastest: ``fast`` gives up 4 "
+#~ "MB to run 3.7 times sooner, and"
+#~ " finds 2.4 percentage points more "
+#~ "valid pixels along the way."
+#~ msgstr ""
+
+#~ msgid "33.7 MB"
+#~ msgstr ""
+
+#~ msgid "178.0 ms"
+#~ msgstr ""
+
+#~ msgid "37.8 MB"
+#~ msgstr ""
+
+#~ msgid "48.5 ms"
+#~ msgstr ""
+
+#~ msgid "316.5 ms"
 #~ msgstr ""
 

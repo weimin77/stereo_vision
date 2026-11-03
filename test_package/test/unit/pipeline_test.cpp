@@ -179,9 +179,9 @@ TEST(Config, LoadsTheSampleConfiguration) {
     std::string error;
     ASSERT_TRUE(sv::config_load(resource("sgbm_config.json"), config, &error)) << error;
 
-    EXPECT_EQ(config.profile, "minimal");
+    EXPECT_EQ(config.profile, "fast");
     EXPECT_EQ(config.matcher.block_size, 5);
-    EXPECT_EQ(config.matcher.mode, sv::SgbmMode::Sgbm);
+    EXPECT_EQ(config.matcher.mode, sv::SgbmMode::ThreeWay);
     EXPECT_EQ(config.matcher.num_disparities, 0);
     EXPECT_NEAR(config.working_near_m, 0.07, 1e-9);
     EXPECT_NEAR(config.working_far_m, 0.25, 1e-9);

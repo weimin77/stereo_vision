@@ -156,9 +156,9 @@ _`Algorithm benchmark from test frame`
 --------------------------------------
 
 Measured on the BlenderProc oven scene shipped in ``test_package/resources``: a 640x480 pair,
-``fx = fy = 140 px``, ``baseline = 0.06 m``, window ``32 + 96``, ``profile = "minimal"``
-(``MODE_SGBM``, five directions). Single frame, Release build, one representative run — timings on a
-shared machine move by tens of percent, the agreement columns do not:
+``fx = fy = 140 px``, ``baseline = 0.06 m``, window ``32 + 96``, ``profile = "fast"``
+(``MODE_SGBM_3WAY``, three directions). Single frame, Release build, one representative run —
+timings on a shared machine move by tens of percent, the agreement columns do not:
 
 .. table:: single-frame cost and agreement
    :name: test results
@@ -167,25 +167,28 @@ shared machine move by tens of percent, the agreement columns do not:
    ================ =========== ==========================================
    phase            time        result
    ================ =========== ==========================================
-   load             15.1 ms     config, calibration and both images
-   run              192.4 ms    of which rectify 5.1 + match 178.0 + depth 0.4
-   write            38.9 ms     five artefacts, ``cloud.pcd`` is 2.7 MB
-   total            246.5 ms    peak resident 33.7 MB
+   load             14.8 ms     config, calibration and both images
+   run              58.6 ms     of which rectify 5.7 + match 44.2 + depth 0.4
+   write            38.3 ms     five artefacts, ``cloud.pcd`` is 2.7 MB
+   total            111.7 ms    peak resident 37.9 MB
    ---------------- ----------- ------------------------------------------
-   coverage         —           ``72.4 %`` of pixels valid
-   disparity p50    —           ``74.13 px`` against ``73.26 px`` in the ground truth
-   depth p50        —           ``0.1133 m`` against ``0.1129 m`` in the ground truth
-   point cloud      —           ``222404`` points
+   coverage         —           ``74.8 %`` of pixels valid
+   disparity p50    —           ``74.44 px`` against ``73.26 px`` in the ground truth
+   depth p50        —           ``0.1129 m`` against ``0.1129 m`` in the ground truth
+   point cloud      —           ``229653`` points
    ================ =========== ==========================================
 
 ``run`` is larger than the sum of its three stages because the stage timers stop at the conversion to
 depth; the validity histogram and the six percentiles over the disparity and depth buffers are inside
 ``run`` but belong to no stage.
 
-The search mode is the one parameter that changes memory by an order of magnitude, because the
-eight-direction sweep (``MODE_HH``) keeps a full ``width x height x numDisparities`` cost volume while
-the others keep a single row. ``minimal`` is the cheapest in memory, not the fastest: ``fast`` gives
-up 4 MB to run 3.7 times sooner, and finds 2.4 percentage points more valid pixels along the way.
+The search mode is the one parameter that moves both time and memory by a factor, and it moves them
+in opposite directions. ``fast`` wins on time because OpenCV parallelises ``MODE_SGBM_3WAY`` over
+stripes while its five-direction ``MODE_SGBM`` path barely scales past one core: on four cores the
+two differ by 3.9x, and ``fast`` also finds 2.4 percentage points more valid pixels for 5.1 MB more
+peak memory. The eight-direction sweep is the expensive one — it keeps a full
+``width x height x numDisparities`` cost volume, which is 125 MB more and seven times the time, for a
+disparity median that moves by half a pixel.
 
 .. table:: search mode trade-off on the same pair
    :name: mode trade-off
@@ -194,9 +197,9 @@ up 4 MB to run 3.7 times sooner, and finds 2.4 percentage points more valid pixe
    ============ ========== =========== =============== =========== ============
    profile      mode       peak RSS    match           valid       disparity p50
    ============ ========== =========== =============== =========== ============
-   minimal      ``sgbm``   33.7 MB     178.0 ms        72.4 %      ``74.13 px``
-   fast         ``3way``   37.8 MB     48.5 ms         74.8 %      ``74.44 px``
-   balanced     ``hh``     162.8 MB    316.5 ms        74.9 %      ``74.94 px``
+   minimal      ``sgbm``   32.8 MB     173.0 ms        72.4 %      ``74.13 px``
+   fast         ``3way``   37.9 MB     44.2 ms         74.8 %      ``74.44 px``
+   balanced     ``hh``     162.8 MB    316.4 ms        74.9 %      ``74.94 px``
    ============ ========== =========== =============== =========== ============
 
 Suite level: 65 GTest cases, 82.1 % line coverage.

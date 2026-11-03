@@ -197,8 +197,8 @@ the very end, so a `conan create` log finishes with
 [example] rectified 640x480
 ...
 [example] saved     disparity.png, depth.png (measurement) and disparity_color.png, depth_color.png (colour), plus cloud.pcd in example_output
-[example] elapsed   load 15.1 ms, run 192.4 ms, write 38.9 ms, total 246.5 ms
-[example] memory    peak 33.7 MB resident
+[example] elapsed   load 14.8 ms, run 58.6 ms, write 38.3 ms, total 111.7 ms
+[example] memory    peak 37.9 MB resident
 ```
 
 instead of with the coverage table. The example also reports cost: `elapsed` splits the wall clock

@@ -8,16 +8,18 @@
     "Pipeline::set_input_image()."
   ],
 
-  "profile": "minimal",
+  "profile": "fast",
   "profiles": {
     "_comment": [
-      "minimal uses MODE_SGBM: five directions, single pass, and no full-image cost volume,",
-      "so its peak memory does not scale with height x width x numDisparities. Measured on",
-      "this pair: 34.1 MB peak and 193 ms match, against 38.4 MB / 51 ms for the 3-way sweep",
-      "and 163.2 MB / 330 ms for the eight-direction one. Median disparity 74.13 px against",
-      "74.44 and 74.94 (scene ground truth 73.26 px), valid 72.4 % against 74.8 and 74.9.",
-      "It is the cheapest in memory, not the fastest: raise the profile when wall-clock time",
-      "or the extra valid pixels matter more."
+      "fast uses MODE_SGBM_3WAY: three directions, no full-image cost volume, and the fastest",
+      "of the four by a wide margin because OpenCV parallelises it over stripes. Measured on",
+      "this pair, two left-right passes: 44 ms match and 37.9 MB peak, against 173 ms /",
+      "32.8 MB for MODE_SGBM and 316 ms / 162.8 MB for the eight-direction sweep. It is also",
+      "the most accurate: median disparity 74.44 px against 74.13 and 74.94 (scene ground",
+      "truth 73.26 px), valid 74.8 % against 72.4 and 74.9.",
+      "minimal keeps the lowest peak, but only by 5.1 MB, and it pays 3.9x the match time for",
+      "it. balanced and detail keep a full width x height x numDisparities cost volume: 125 MB",
+      "more, seven times the time, and no accuracy one can see."
     ],
     "minimal": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "sgbm", "uniqueness_ratio": 5},
     "fast": {"block_size": 5, "p1_factor": 8, "p2_factor": 256, "mode": "3way", "uniqueness_ratio": 5},
@@ -56,7 +58,7 @@
   "block_size": 5,
   "p1_factor": 8,
   "p2_factor": 256,
-  "mode": "sgbm",
+  "mode": "3way",
   "uniqueness_ratio": 5,
   "pre_filter_cap": 31,
   "disp12_max_diff": 1,
